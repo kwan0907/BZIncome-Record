@@ -1,311 +1,489 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BZ 收入與庫存管理系統</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5}
-        .header{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
-        .header h1{font-size:20px}
-        .nav{background:#fff;display:flex;border-bottom:2px solid #e2e8f0;overflow-x:auto}
-        .nav-btn{padding:14px 24px;border:none;background:none;cursor:pointer;font-size:15px;color:#64748b;border-bottom:3px solid transparent;white-space:nowrap;transition:.2s}
-        .nav-btn:hover{color:#667eea}
-        .nav-btn.active{color:#667eea;border-bottom-color:#667eea;font-weight:600}
-        .container{max-width:1200px;margin:0 auto;padding:20px}
-        .page{display:none}.page.active{display:block}
-        .card{background:#fff;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
-        .card h2{font-size:18px;margin-bottom:16px;color:#1e293b}
-        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px}
-        .stat-card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
-        .stat-card .label{font-size:13px;color:#64748b;margin-bottom:4px}
-        .stat-card .value{font-size:28px;font-weight:700;color:#1e293b}
-        .stat-card .icon{font-size:32px;float:right}
-        .btn{padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;transition:.2s}
-        .btn-primary{background:#667eea;color:#fff}.btn-primary:hover{background:#5a6fd6}
-        .btn-danger{background:#ef4444;color:#fff}.btn-danger:hover{background:#dc2626}
-        .btn-success{background:#10b981;color:#fff}.btn-success:hover{background:#059669}
-        .btn-sm{padding:6px 12px;font-size:12px}
-        .form-group{margin-bottom:14px}
-        .form-group label{display:block;font-size:13px;color:#475569;margin-bottom:4px;font-weight:500}
-        .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;transition:.2s}
-        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.1)}
-        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-        table{width:100%;border-collapse:collapse}
-        th,td{padding:12px;text-align:left;border-bottom:1px solid #e2e8f0;font-size:14px}
-        th{background:#f8fafc;font-weight:600;color:#475569}
-        tr:hover{background:#f8fafc}
-        .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
-        .modal-overlay.show{display:flex}
-        .modal{background:#fff;border-radius:12px;padding:24px;width:90%;max-width:500px;max-height:90vh;overflow-y:auto}
-        .modal h3{margin-bottom:16px;font-size:18px}
-        .search-bar{padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;width:100%;max-width:300px;font-size:14px;margin-bottom:16px}
-        .badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500}
-        .badge-green{background:#d1fae5;color:#065f46}
-        .badge-red{background:#fee2e2;color:#991b1b}
-        .badge-yellow{background:#fef3c7;color:#92400e}
-        .flex{display:flex}.flex-between{display:flex;justify-content:space-between;align-items:center}
-        .gap-8{gap:8px}.mb-16{margin-bottom:16px}
-        .empty-state{text-align:center;padding:40px;color:#94a3b8}
-        .empty-state .icon{font-size:48px;margin-bottom:12px}
-        @media(max-width:768px){.form-row{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr 1fr}th,td{padding:8px;font-size:12px}.hide-mobile{display:none}}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BZ 收入與庫存管理系統</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#4F46E5;--primary-light:#818CF8;--primary-dark:#3730A3;
+  --accent:#10B981;--warning:#F59E0B;--danger:#EF4444;
+  --bg:#F1F5F9;--card:#FFF;--text:#1E293B;--text-light:#64748B;--border:#E2E8F0;
+  --sidebar-w:250px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{width:var(--sidebar-w);background:linear-gradient(180deg,#312E81 0%,var(--primary) 100%);color:#fff;position:fixed;height:100vh;overflow-y:auto;z-index:100;transition:transform .3s}
+.sidebar-header{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar-header h1{font-size:18px;font-weight:800;letter-spacing:.5px}
+.sidebar-header p{font-size:11px;opacity:.6;margin-top:4px}
+.nav-menu{list-style:none;padding:12px 0}
+.nav-item{padding:13px 24px;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:14px;transition:all .2s;border-left:3px solid transparent;color:rgba(255,255,255,.75)}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.12);border-left-color:var(--accent);color:#fff;font-weight:600}
+.nav-item .icon{font-size:18px;width:26px;text-align:center}
+
+/* Main */
+.main{margin-left:var(--sidebar-w);flex:1;padding:32px;min-height:100vh}
+.page-header{margin-bottom:24px}
+.page-header h2{font-size:24px;font-weight:700}
+.page-header p{color:var(--text-light);margin-top:2px;font-size:14px}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:var(--card);border-radius:16px;padding:22px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:center;gap:16px;transition:transform .2s,box-shadow .2s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.1)}
+.stat-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.stat-icon.blue{background:#EEF2FF}.stat-icon.green{background:#ECFDF5}.stat-icon.yellow{background:#FFFBEB}.stat-icon.purple{background:#F5F3FF}
+.stat-info h3{font-size:26px;font-weight:700;line-height:1}.stat-info p{font-size:12px;color:var(--text-light);margin-top:4px}
+
+/* Toolbar */
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px}
+.search-box{display:flex;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0 14px;width:300px;max-width:100%}
+.search-box input{border:none;outline:none;padding:10px 8px;font-size:14px;width:100%;background:transparent}
+
+/* Buttons */
+.btn{padding:10px 20px;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}
+.btn-success{background:var(--accent);color:#fff}.btn-success:hover{background:#059669}
+.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{background:#DC2626}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}.btn-outline:hover{background:var(--bg)}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:8px}
+
+/* Table */
+.table-card{background:var(--card);border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
+.table-card table{width:100%;border-collapse:collapse}
+.table-card th{background:#F8FAFC;padding:12px 16px;font-size:12px;font-weight:600;color:var(--text-light);text-align:left;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+.table-card td{padding:13px 16px;font-size:14px;border-bottom:1px solid var(--border)}
+.table-card tr:last-child td{border-bottom:none}
+.table-card tr:hover td{background:#FAFBFD}
+.actions{display:flex;gap:6px}
+
+/* Badge */
+.badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-green{background:#ECFDF5;color:#059669}.badge-yellow{background:#FFFBEB;color:#D97706}.badge-red{background:#FEF2F2;color:#DC2626}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border-radius:20px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.2);animation:modalIn .25s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-header{padding:24px 28px 0;display:flex;justify-content:space-between;align-items:center}
+.modal-header h3{font-size:18px;font-weight:700}
+.modal-close{width:34px;height:34px;border-radius:10px;border:none;background:var(--bg);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.modal-close:hover{background:var(--border)}
+.modal-body{padding:24px 28px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--text-light);margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;font-family:inherit;background:#fff}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.08)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-footer{padding:0 28px 24px;display:flex;justify-content:flex-end;gap:10px}
+
+/* Toast */
+.toast{position:fixed;top:24px;right:24px;padding:14px 24px;border-radius:12px;color:#fff;font-size:14px;font-weight:600;z-index:300;transform:translateX(120%);transition:transform .3s ease;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.toast.show{transform:translateX(0)}.toast.success{background:var(--accent)}.toast.error{background:var(--danger)}
+
+/* Pages */
+.page{display:none}.page.active{display:block}
+.empty-state{text-align:center;padding:50px 20px;color:var(--text-light)}
+.empty-state .e-icon{font-size:44px;margin-bottom:8px}.empty-state p{font-size:14px}
+
+/* Mobile */
+.menu-btn{display:none;position:fixed;top:16px;left:16px;z-index:150;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
+  .main{margin-left:0;padding:16px}
+  .menu-btn{display:block}
+  .form-row{grid-template-columns:1fr}
+  .search-box{width:100%}
+  .stats-grid{grid-template-columns:1fr 1fr}
+}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
 </head>
 <body>
 
-<div class="header">
-    <h1>📊 BZ 收入與庫存管理系統</h1>
-    <span id="currentDate"></span>
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>💼 BZ 管理系統</h1>
+    <p>收入與庫存管理平台</p>
+  </div>
+  <ul class="nav-menu">
+    <li class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">📊</span>儀表板</li>
+    <li class="nav-item" onclick="showPage('customers',this)"><span class="icon">👥</span>客戶管理</li>
+    <li class="nav-item" onclick="showPage('products',this)"><span class="icon">📦</span>商品管理</li>
+    <li class="nav-item" onclick="showPage('orders',this)"><span class="icon">🧾</span>訂單記錄</li>
+  </ul>
+</nav>
+
+<button class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<div class="main">
+
+  <!-- Dashboard -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header"><h2>📊 儀表板</h2><p>系統總覽</p></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon blue">👥</div><div class="stat-info"><h3 id="stat-customers">0</h3><p>總客戶數</p></div></div>
+      <div class="stat-card"><div class="stat-icon green">📦</div><div class="stat-info"><h3 id="stat-products">0</h3><p>商品種類</p></div></div>
+      <div class="stat-card"><div class="stat-icon yellow">🧾</div><div class="stat-info"><h3 id="stat-orders">0</h3><p>總訂單數</p></div></div>
+      <div class="stat-card"><div class="stat-icon purple">💰</div><div class="stat-info"><h3 id="stat-revenue">$0</h3><p>總收入</p></div></div>
+    </div>
+    <div style="margin-bottom:16px"><h3 style="font-size:18px;font-weight:600">最近訂單</h3></div>
+    <div class="table-card">
+      <table><thead><tr><th>編號</th><th>客戶</th><th>金額</th><th>狀態</th><th>日期</th></tr></thead>
+      <tbody id="recent-orders-body"><tr><td colspan="5" class="empty-state"><p>暫無訂單</p></td></tr></tbody></table>
+    </div>
+  </div>
+
+  <!-- Customers -->
+  <div class="page" id="page-customers">
+    <div class="page-header"><h2>👥 客戶管理</h2><p>管理所有客戶資料</p></div>
+    <div class="toolbar">
+      <div class="search-box"><span>🔍</span><input type="text" placeholder="搜尋客戶..." id="customer-search" oninput="filterCustomers()"></div>
+      <button class="btn btn-primary" onclick="openNewCustomer()">＋ 新增客戶</button>
+    </div>
+    <div class="table-card">
+      <table><thead><tr><th>姓名</th><th>電話</th><th>Email</th><th>地址</th><th>日期</th><th>操作</th></tr></thead>
+      <tbody id="customers-body"></tbody></table>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <div class="page" id="page-products">
+    <div class="page-header"><h2>📦 商品管理</h2><p>管理庫存與商品資訊</p></div>
+    <div class="toolbar">
+      <div class="search-box"><span>🔍</span><input type="text" placeholder="搜尋商品..." id="product-search" oninput="filterProducts()"></div>
+      <button class="btn btn-primary" onclick="openNewProduct()">＋ 新增商品</button>
+    </div>
+    <div class="table-card">
+      <table><thead><tr><th>商品名稱</th><th>分類</th><th>單價</th><th>庫存</th><th>狀態</th><th>操作</th></tr></thead>
+      <tbody id="products-body"></tbody></table>
+    </div>
+  </div>
+
+  <!-- Orders -->
+  <div class="page" id="page-orders">
+    <div class="page-header"><h2>🧾 訂單記錄</h2><p>管理銷售訂單</p></div>
+    <div class="toolbar">
+      <div class="search-box"><span>🔍</span><input type="text" placeholder="搜尋訂單..." id="order-search" oninput="filterOrders()"></div>
+      <button class="btn btn-primary" onclick="openNewOrder()">＋ 新增訂單</button>
+    </div>
+    <div class="table-card">
+      <table><thead><tr><th>#</th><th>客戶</th><th>商品明細</th><th>總金額</th><th>付款狀態</th><th>日期</th><th>操作</th></tr></thead>
+      <tbody id="orders-body"></tbody></table>
+    </div>
+  </div>
+
 </div>
 
-<div class="nav">
-    <button class="nav-btn active" onclick="showPage('dashboard',this)">📈 儀表板</button>
-    <button class="nav-btn" onclick="showPage('customers',this)">👥 客戶管理</button>
-    <button class="nav-btn" onclick="showPage('products',this)">📦 產品庫存</button>
-    <button class="nav-btn" onclick="showPage('sales',this)">💰 銷售記錄</button>
+<!-- Customer Modal -->
+<div class="modal-overlay" id="customer-modal" onclick="if(event.target===this)closeModal('customer-modal')">
+  <div class="modal">
+    <div class="modal-header"><h3 id="customer-modal-title">新增客戶</h3><button class="modal-close" onclick="closeModal('customer-modal')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="customer-id">
+      <div class="form-group"><label>客戶姓名 *</label><input type="text" id="customer-name" placeholder="請輸入姓名"></div>
+      <div class="form-row">
+        <div class="form-group"><label>電話</label><input type="tel" id="customer-phone" placeholder="請輸入電話"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="customer-email" placeholder="請輸入 Email"></div>
+      </div>
+      <div class="form-group"><label>地址</label><input type="text" id="customer-address" placeholder="請輸入地址"></div>
+      <div class="form-group"><label>備註</label><textarea id="customer-notes" rows="2" placeholder="備註事項"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('customer-modal')">取消</button>
+      <button class="btn btn-primary" onclick="saveCustomer()">儲存</button>
+    </div>
+  </div>
 </div>
 
-<div class="container">
-    <!-- 儀表板 -->
-    <div id="page-dashboard" class="page active">
-        <div class="stats-grid">
-            <div class="stat-card"><div class="icon">👥</div><div class="label">客戶總數</div><div class="value" id="stat-customers">0</div></div>
-            <div class="stat-card"><div class="icon">📦</div><div class="label">產品種類</div><div class="value" id="stat-products">0</div></div>
-            <div class="stat-card"><div class="icon">💰</div><div class="label">本月收入</div><div class="value" id="stat-monthly">$0</div></div>
-            <div class="stat-card"><div class="icon">📊</div><div class="label">總收入</div><div class="value" id="stat-total">$0</div></div>
-        </div>
-        <div class="card"><h2>⚠️ 庫存警告（低於5件）</h2><div id="low-stock-list"></div></div>
-        <div class="card"><h2>🕐 最近銷售</h2><div id="recent-sales"></div></div>
+<!-- Product Modal -->
+<div class="modal-overlay" id="product-modal" onclick="if(event.target===this)closeModal('product-modal')">
+  <div class="modal">
+    <div class="modal-header"><h3 id="product-modal-title">新增商品</h3><button class="modal-close" onclick="closeModal('product-modal')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="product-id">
+      <div class="form-group"><label>商品名稱 *</label><input type="text" id="product-name" placeholder="請輸入商品名稱"></div>
+      <div class="form-row">
+        <div class="form-group"><label>分類</label><input type="text" id="product-category" placeholder="例：保健品、護膚品"></div>
+        <div class="form-group"><label>單位</label><input type="text" id="product-unit" placeholder="例：瓶、盒" value="個"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>單價 *</label><input type="number" id="product-price" placeholder="0" min="0" step="0.01"></div>
+        <div class="form-group"><label>庫存數量 *</label><input type="number" id="product-stock" placeholder="0" min="0"></div>
+      </div>
     </div>
-
-    <!-- 客戶管理 -->
-    <div id="page-customers" class="page">
-        <div class="card">
-            <div class="flex-between mb-16"><h2>👥 客戶管理</h2><button class="btn btn-primary" onclick="openModal('customer')">+ 新增客戶</button></div>
-            <input type="text" class="search-bar" placeholder="🔍 搜尋客戶..." oninput="searchCustomers(this.value)">
-            <div id="customers-table"></div>
-        </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('product-modal')">取消</button>
+      <button class="btn btn-primary" onclick="saveProduct()">儲存</button>
     </div>
-
-    <!-- 產品庫存 -->
-    <div id="page-products" class="page">
-        <div class="card">
-            <div class="flex-between mb-16"><h2>📦 產品庫存</h2><button class="btn btn-primary" onclick="openModal('product')">+ 新增產品</button></div>
-            <input type="text" class="search-bar" placeholder="🔍 搜尋產品..." oninput="searchProducts(this.value)">
-            <div id="products-table"></div>
-        </div>
-    </div>
-
-    <!-- 銷售記錄 -->
-    <div id="page-sales" class="page">
-        <div class="card">
-            <div class="flex-between mb-16"><h2>💰 銷售記錄</h2><button class="btn btn-primary" onclick="openModal('sale')">+ 新增銷售</button></div>
-            <div id="sales-table"></div>
-        </div>
-    </div>
+  </div>
 </div>
 
-<!-- 客戶 Modal -->
-<div class="modal-overlay" id="modal-customer">
-    <div class="modal">
-        <h3 id="customer-modal-title">新增客戶</h3>
-        <input type="hidden" id="customer-id">
-        <div class="form-group"><label>姓名 *</label><input type="text" id="customer-name" placeholder="客戶姓名"></div>
-        <div class="form-row">
-            <div class="form-group"><label>電話</label><input type="text" id="customer-phone" placeholder="電話號碼"></div>
-            <div class="form-group"><label>Email</label><input type="email" id="customer-email" placeholder="Email"></div>
+<!-- Order Modal -->
+<div class="modal-overlay" id="order-modal" onclick="if(event.target===this)closeModal('order-modal')">
+  <div class="modal" style="width:600px">
+    <div class="modal-header"><h3>新增訂單</h3><button class="modal-close" onclick="closeModal('order-modal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>選擇客戶 *</label><select id="order-customer"></select></div>
+      <div class="form-group">
+        <label>訂單明細</label>
+        <div id="order-items"></div>
+        <button class="btn btn-outline btn-sm" onclick="addOrderItem()" style="margin-top:8px">＋ 新增項目</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>付款狀態</label>
+          <select id="order-status"><option value="已付款">已付款</option><option value="未付款">未付款</option><option value="部分付款">部分付款</option></select>
         </div>
-        <div class="form-group"><label>備註</label><textarea id="customer-notes" rows="3" placeholder="備註..."></textarea></div>
-        <div class="flex gap-8" style="justify-content:flex-end">
-            <button class="btn" onclick="closeModal('customer')" style="background:#e2e8f0">取消</button>
-            <button class="btn btn-primary" onclick="saveCustomer()">儲存</button>
-        </div>
+        <div class="form-group"><label>總金額</label><input type="text" id="order-total" readonly style="background:#F8FAFC;font-weight:700;font-size:18px" value="$0"></div>
+      </div>
+      <div class="form-group"><label>備註</label><textarea id="order-notes" rows="2" placeholder="訂單備註"></textarea></div>
     </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('order-modal')">取消</button>
+      <button class="btn btn-primary" onclick="saveOrder()">建立訂單</button>
+    </div>
+  </div>
 </div>
 
-<!-- 產品 Modal -->
-<div class="modal-overlay" id="modal-product">
-    <div class="modal">
-        <h3 id="product-modal-title">新增產品</h3>
-        <input type="hidden" id="product-id">
-        <div class="form-group"><label>產品名稱 *</label><input type="text" id="product-name" placeholder="產品名稱"></div>
-        <div class="form-row">
-            <div class="form-group"><label>售價</label><input type="number" id="product-price" placeholder="0" min="0"></div>
-            <div class="form-group"><label>庫存數量</label><input type="number" id="product-stock" placeholder="0" min="0"></div>
-        </div>
-        <div class="form-group"><label>分類</label><input type="text" id="product-category" placeholder="例如：營養品、護膚品"></div>
-        <div class="flex gap-8" style="justify-content:flex-end">
-            <button class="btn" onclick="closeModal('product')" style="background:#e2e8f0">取消</button>
-            <button class="btn btn-primary" onclick="saveProduct()">儲存</button>
-        </div>
-    </div>
-</div>
-
-<!-- 銷售 Modal -->
-<div class="modal-overlay" id="modal-sale">
-    <div class="modal">
-        <h3>新增銷售記錄</h3>
-        <div class="form-row">
-            <div class="form-group"><label>客戶 *</label><select id="sale-customer"></select></div>
-            <div class="form-group"><label>日期</label><input type="date" id="sale-date"></div>
-        </div>
-        <div class="form-group"><label>銷售項目</label><div id="sale-items"></div>
-            <button class="btn btn-sm" onclick="addSaleItem()" style="background:#e2e8f0;margin-top:8px">+ 新增項目</button>
-        </div>
-        <div class="form-group"><label>總金額</label><input type="number" id="sale-total" placeholder="0" min="0"></div>
-        <div class="form-group"><label>備註</label><textarea id="sale-notes" rows="2" placeholder="備註..."></textarea></div>
-        <div class="flex gap-8" style="justify-content:flex-end">
-            <button class="btn" onclick="closeModal('sale')" style="background:#e2e8f0">取消</button>
-            <button class="btn btn-success" onclick="saveSale()">儲存銷售</button>
-        </div>
-    </div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
-const SUPABASE_URL='https://ywsvurcdilrzguxmkmws.supabase.co';
-const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3c3Z1cmNkaWxyemd1eG1rbXdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNTQ3ODcsImV4cCI6MjA5MTkzMDc4N30.Jkg-9iBuSJx2wH3ptB0XuMmRNU9kxoZzVMI4ed1fufE';
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+// =============================================
+// ⚠️ 在這裡填入你的 Supabase 資訊
+// =============================================
+const SUPABASE_URL = 'https://ywsvurcdilrzguxmkmws.supabase.co';
+const SUPABASE_KEY = '在這裡貼上你的anon_key';
+// =============================================
 
-let customersData=[],productsData=[],salesData=[];
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let customers=[],products=[],orders=[];
 
-function showPage(page,btn){
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-    document.getElementById('page-'+page).classList.add('active');
-    btn.classList.add('active');
-    if(page==='dashboard')loadDashboard();
-    if(page==='customers')loadCustomers();
-    if(page==='products')loadProducts();
-    if(page==='sales')loadSales();
+// === Navigation ===
+function showPage(page,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(el)el.classList.add('active');
+  document.getElementById('sidebar').classList.remove('open');
+  if(page==='dashboard')loadDashboard();
+  if(page==='customers')loadCustomers();
+  if(page==='products')loadProducts();
+  if(page==='orders')loadOrders();
 }
 
-function openModal(type){document.getElementById('modal-'+type).classList.add('show');if(type==='sale')populateSaleForm()}
-function closeModal(type){
-    document.getElementById('modal-'+type).classList.remove('show');
-    if(type==='customer'){document.getElementById('customer-id').value='';document.getElementById('customer-name').value='';document.getElementById('customer-phone').value='';document.getElementById('customer-email').value='';document.getElementById('customer-notes').value='';document.getElementById('customer-modal-title').textContent='新增客戶'}
-    if(type==='product'){document.getElementById('product-id').value='';document.getElementById('product-name').value='';document.getElementById('product-price').value='';document.getElementById('product-stock').value='';document.getElementById('product-category').value='';document.getElementById('product-modal-title').textContent='新增產品'}
+// === Toast ===
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');t.textContent=msg;
+  t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// 客戶
+// === Modal ===
+function openModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+
+// === Helpers ===
+function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function fmtDate(d){return d?new Date(d).toLocaleDateString('zh-TW'):'-'}
+function fmtMoney(n){return'$'+Number(n||0).toLocaleString()}
+
+// ==================== CUSTOMERS ====================
 async function loadCustomers(){
-    const{data}=await db.from('customers').select('*').order('created_at',{ascending:false});
-    customersData=data||[];renderCustomers(customersData);
+  const{data,error}=await db.from('customers').select('*').order('created_at',{ascending:false});
+  if(error){toast('載入失敗: '+error.message,'error');return}
+  customers=data||[];renderCustomers(customers);
 }
-function renderCustomers(data){
-    if(!data.length){document.getElementById('customers-table').innerHTML='<div class="empty-state"><div class="icon">👥</div><p>尚無客戶資料</p></div>';return}
-    let h='<table><thead><tr><th>姓名</th><th>電話</th><th class="hide-mobile">Email</th><th class="hide-mobile">備註</th><th>操作</th></tr></thead><tbody>';
-    data.forEach(c=>{h+=`<tr><td><strong>${c.name}</strong></td><td>${c.phone||'-'}</td><td class="hide-mobile">${c.email||'-'}</td><td class="hide-mobile">${c.notes||'-'}</td><td><button class="btn btn-sm btn-primary" onclick="editCustomer(${c.id})">編輯</button> <button class="btn btn-sm btn-danger" onclick="deleteCustomer(${c.id})">刪除</button></td></tr>`});
-    h+='</tbody></table>';document.getElementById('customers-table').innerHTML=h;
+function renderCustomers(list){
+  const tb=document.getElementById('customers-body');
+  if(!list.length){tb.innerHTML='<tr><td colspan="6" class="empty-state"><div class="e-icon">👥</div><p>尚未新增客戶</p></td></tr>';return}
+  tb.innerHTML=list.map(c=>`<tr>
+    <td><strong>${esc(c.name)}</strong></td><td>${esc(c.phone||'-')}</td><td>${esc(c.email||'-')}</td>
+    <td>${esc(c.address||'-')}</td><td>${fmtDate(c.created_at)}</td>
+    <td class="actions"><button class="btn btn-outline btn-sm" onclick="editCustomer(${c.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteCustomer(${c.id})">🗑️</button></td>
+  </tr>`).join('');
 }
-function searchCustomers(q){renderCustomers(customersData.filter(c=>c.name.includes(q)||(c.phone&&c.phone.includes(q))))}
+function filterCustomers(){const q=document.getElementById('customer-search').value.toLowerCase();renderCustomers(customers.filter(c=>c.name.toLowerCase().includes(q)||(c.phone&&c.phone.includes(q))))}
+function openNewCustomer(){clearCustomerForm();openModal('customer-modal')}
+function clearCustomerForm(){
+  document.getElementById('customer-modal-title').textContent='新增客戶';
+  ['customer-id','customer-name','customer-phone','customer-email','customer-address','customer-notes'].forEach(id=>document.getElementById(id).value='');
+}
+function editCustomer(id){
+  const c=customers.find(x=>x.id===id);if(!c)return;
+  document.getElementById('customer-modal-title').textContent='編輯客戶';
+  document.getElementById('customer-id').value=c.id;
+  document.getElementById('customer-name').value=c.name||'';
+  document.getElementById('customer-phone').value=c.phone||'';
+  document.getElementById('customer-email').value=c.email||'';
+  document.getElementById('customer-address').value=c.address||'';
+  document.getElementById('customer-notes').value=c.notes||'';
+  openModal('customer-modal');
+}
 async function saveCustomer(){
-    const id=document.getElementById('customer-id').value;
-    const d={name:document.getElementById('customer-name').value.trim(),phone:document.getElementById('customer-phone').value.trim(),email:document.getElementById('customer-email').value.trim(),notes:document.getElementById('customer-notes').value.trim()};
-    if(!d.name){alert('請輸入客戶姓名');return}
-    if(id){await db.from('customers').update(d).eq('id',id)}else{await db.from('customers').insert(d)}
-    closeModal('customer');loadCustomers();
+  const id=document.getElementById('customer-id').value;
+  const d={name:document.getElementById('customer-name').value.trim(),phone:document.getElementById('customer-phone').value.trim(),email:document.getElementById('customer-email').value.trim(),address:document.getElementById('customer-address').value.trim(),notes:document.getElementById('customer-notes').value.trim()};
+  if(!d.name){toast('請輸入客戶姓名','error');return}
+  const r=id?await db.from('customers').update(d).eq('id',id):await db.from('customers').insert([d]);
+  if(r.error){toast('儲存失敗: '+r.error.message,'error');return}
+  toast(id?'客戶已更新':'客戶已新增');closeModal('customer-modal');loadCustomers();
 }
-async function editCustomer(id){
-    const c=customersData.find(x=>x.id===id);if(!c)return;
-    document.getElementById('customer-id').value=c.id;document.getElementById('customer-name').value=c.name;document.getElementById('customer-phone').value=c.phone||'';document.getElementById('customer-email').value=c.email||'';document.getElementById('customer-notes').value=c.notes||'';document.getElementById('customer-modal-title').textContent='編輯客戶';openModal('customer');
+async function deleteCustomer(id){
+  if(!confirm('確定要刪除此客戶？'))return;
+  const{error}=await db.from('customers').delete().eq('id',id);
+  if(error){toast('刪除失敗: '+error.message,'error');return}
+  toast('客戶已刪除');loadCustomers();
 }
-async function deleteCustomer(id){if(!confirm('確定要刪除此客戶？'))return;await db.from('customers').delete().eq('id',id);loadCustomers()}
 
-// 產品
+// ==================== PRODUCTS ====================
 async function loadProducts(){
-    const{data}=await db.from('products').select('*').order('created_at',{ascending:false});
-    productsData=data||[];renderProducts(productsData);
+  const{data,error}=await db.from('products').select('*').order('created_at',{ascending:false});
+  if(error){toast('載入失敗: '+error.message,'error');return}
+  products=data||[];renderProducts(products);
 }
-function renderProducts(data){
-    if(!data.length){document.getElementById('products-table').innerHTML='<div class="empty-state"><div class="icon">📦</div><p>尚無產品資料</p></div>';return}
-    let h='<table><thead><tr><th>產品名稱</th><th>分類</th><th>售價</th><th>庫存</th><th>操作</th></tr></thead><tbody>';
-    data.forEach(p=>{
-        let b=p.stock<=0?'badge-red':p.stock<5?'badge-yellow':'badge-green';
-        h+=`<tr><td><strong>${p.name}</strong></td><td>${p.category||'-'}</td><td>$${Number(p.price).toLocaleString()}</td><td><span class="badge ${b}">${p.stock}</span></td><td><button class="btn btn-sm btn-primary" onclick="editProduct(${p.id})">編輯</button> <button class="btn btn-sm btn-danger" onclick="deleteProduct(${p.id})">刪除</button></td></tr>`});
-    h+='</tbody></table>';document.getElementById('products-table').innerHTML=h;
+function renderProducts(list){
+  const tb=document.getElementById('products-body');
+  if(!list.length){tb.innerHTML='<tr><td colspan="6" class="empty-state"><div class="e-icon">📦</div><p>尚未新增商品</p></td></tr>';return}
+  tb.innerHTML=list.map(p=>{
+    let bc='badge-green',st='充足';if(p.stock<=0){bc='badge-red';st='缺貨'}else if(p.stock<=10){bc='badge-yellow';st='低庫存'}
+    return`<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.category||'-')}</td><td>${fmtMoney(p.price)}</td>
+    <td>${p.stock} ${esc(p.unit||'個')}</td><td><span class="badge ${bc}">${st}</span></td>
+    <td class="actions"><button class="btn btn-outline btn-sm" onclick="editProduct(${p.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})">🗑️</button></td></tr>`
+  }).join('');
 }
-function searchProducts(q){renderProducts(productsData.filter(p=>p.name.includes(q)||(p.category&&p.category.includes(q))))}
+function filterProducts(){const q=document.getElementById('product-search').value.toLowerCase();renderProducts(products.filter(p=>p.name.toLowerCase().includes(q)))}
+function openNewProduct(){clearProductForm();openModal('product-modal')}
+function clearProductForm(){
+  document.getElementById('product-modal-title').textContent='新增商品';
+  ['product-id','product-name','product-category','product-price','product-stock'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('product-unit').value='個';
+}
+function editProduct(id){
+  const p=products.find(x=>x.id===id);if(!p)return;
+  document.getElementById('product-modal-title').textContent='編輯商品';
+  document.getElementById('product-id').value=p.id;
+  document.getElementById('product-name').value=p.name||'';
+  document.getElementById('product-category').value=p.category||'';
+  document.getElementById('product-unit').value=p.unit||'個';
+  document.getElementById('product-price').value=p.price||'';
+  document.getElementById('product-stock').value=p.stock||'';
+  openModal('product-modal');
+}
 async function saveProduct(){
-    const id=document.getElementById('product-id').value;
-    const d={name:document.getElementById('product-name').value.trim(),price:parseFloat(document.getElementById('product-price').value)||0,stock:parseInt(document.getElementById('product-stock').value)||0,category:document.getElementById('product-category').value.trim()};
-    if(!d.name){alert('請輸入產品名稱');return}
-    if(id){await db.from('products').update(d).eq('id',id)}else{await db.from('products').insert(d)}
-    closeModal('product');loadProducts();
+  const id=document.getElementById('product-id').value;
+  const d={name:document.getElementById('product-name').value.trim(),category:document.getElementById('product-category').value.trim(),unit:document.getElementById('product-unit').value.trim()||'個',price:parseFloat(document.getElementById('product-price').value)||0,stock:parseInt(document.getElementById('product-stock').value)||0};
+  if(!d.name){toast('請輸入商品名稱','error');return}
+  const r=id?await db.from('products').update(d).eq('id',id):await db.from('products').insert([d]);
+  if(r.error){toast('儲存失敗: '+r.error.message,'error');return}
+  toast(id?'商品已更新':'商品已新增');closeModal('product-modal');loadProducts();
 }
-async function editProduct(id){
-    const p=productsData.find(x=>x.id===id);if(!p)return;
-    document.getElementById('product-id').value=p.id;document.getElementById('product-name').value=p.name;document.getElementById('product-price').value=p.price;document.getElementById('product-stock').value=p.stock;document.getElementById('product-category').value=p.category||'';document.getElementById('product-modal-title').textContent='編輯產品';openModal('product');
+async function deleteProduct(id){
+  if(!confirm('確定要刪除此商品？'))return;
+  const{error}=await db.from('products').delete().eq('id',id);
+  if(error){toast('刪除失敗','error');return}
+  toast('商品已刪除');loadProducts();
 }
-async function deleteProduct(id){if(!confirm('確定要刪除此產品？'))return;await db.from('products').delete().eq('id',id);loadProducts()}
 
-// 銷售
-async function loadSales(){
-    const{data}=await db.from('transactions').select('*,customers(name)').order('date',{ascending:false});
-    salesData=data||[];renderSales(salesData);
+// ==================== ORDERS ====================
+async function loadOrders(){
+  const{data,error}=await db.from('orders').select('*, customers(name)').order('created_at',{ascending:false});
+  if(error){toast('載入失敗: '+error.message,'error');return}
+  orders=data||[];renderOrders(orders);
 }
-function renderSales(data){
-    if(!data.length){document.getElementById('sales-table').innerHTML='<div class="empty-state"><div class="icon">💰</div><p>尚無銷售記錄</p></div>';return}
-    let h='<table><thead><tr><th>日期</th><th>客戶</th><th>項目</th><th>金額</th><th class="hide-mobile">備註</th><th>操作</th></tr></thead><tbody>';
-    data.forEach(s=>{
-        const cn=s.customers?s.customers.name:'-';
-        const items=s.items?s.items.map(i=>i.name+' x'+i.qty).join(', '):'-';
-        h+=`<tr><td>${s.date}</td><td>${cn}</td><td>${items}</td><td><strong>$${Number(s.total).toLocaleString()}</strong></td><td class="hide-mobile">${s.notes||'-'}</td><td><button class="btn btn-sm btn-danger" onclick="deleteSale(${s.id})">刪除</button></td></tr>`});
-    h+='</tbody></table>';document.getElementById('sales-table').innerHTML=h;
+function renderOrders(list){
+  const tb=document.getElementById('orders-body');
+  if(!list.length){tb.innerHTML='<tr><td colspan="7" class="empty-state"><div class="e-icon">🧾</div><p>尚未新增訂單</p></td></tr>';return}
+  tb.innerHTML=list.map(o=>{
+    const bc=o.payment_status==='已付款'?'badge-green':o.payment_status==='部分付款'?'badge-yellow':'badge-red';
+    const items=(o.order_items||[]).map(i=>`${esc(i.name)}×${i.qty}`).join(', ')||'-';
+    return`<tr><td>#${o.id}</td><td><strong>${o.customers?esc(o.customers.name):'-'}</strong></td><td style="max-width:200px">${items}</td>
+    <td><strong>${fmtMoney(o.total_amount)}</strong></td><td><span class="badge ${bc}">${esc(o.payment_status)}</span></td>
+    <td>${fmtDate(o.order_date)}</td><td class="actions"><button class="btn btn-danger btn-sm" onclick="deleteOrder(${o.id})">🗑️</button></td></tr>`
+  }).join('');
 }
-function populateSaleForm(){
-    document.getElementById('sale-date').value=new Date().toISOString().split('T')[0];
-    let o='<option value="">選擇客戶</option>';customersData.forEach(c=>{o+=`<option value="${c.id}">${c.name}</option>`});
-    document.getElementById('sale-customer').innerHTML=o;
-    document.getElementById('sale-items').innerHTML='';document.getElementById('sale-total').value='';document.getElementById('sale-notes').value='';addSaleItem();
+function filterOrders(){const q=document.getElementById('order-search').value.toLowerCase();renderOrders(orders.filter(o=>(o.customers&&o.customers.name.toLowerCase().includes(q))||o.payment_status.includes(q)))}
+
+function openNewOrder(){
+  document.getElementById('order-items').innerHTML='';
+  document.getElementById('order-notes').value='';
+  document.getElementById('order-status').value='已付款';
+  document.getElementById('order-total').value='$0';
+  const sel=document.getElementById('order-customer');
+  sel.innerHTML='<option value="">-- 選擇客戶 --</option>'+customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  addOrderItem();openModal('order-modal');
 }
-function addSaleItem(){
-    const c=document.getElementById('sale-items'),d=document.createElement('div');
-    d.style.cssText='display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:end';
-    let po='<option value="">選擇產品</option>';productsData.forEach(p=>{po+=`<option value="${p.id}" data-price="${p.price}">${p.name} ($${p.price})</option>`});
-    d.innerHTML=`<div><label style="font-size:12px">產品</label><select class="sale-product" onchange="calcTotal()" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px">${po}</select></div><div><label style="font-size:12px">數量</label><input type="number" class="sale-qty" value="1" min="1" onchange="calcTotal()" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px"></div><div><label style="font-size:12px">小計</label><input type="text" class="sale-subtotal" readonly style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;background:#f8fafc"></div><button onclick="this.parentElement.remove();calcTotal()" style="padding:8px;border:none;background:#fee2e2;border-radius:6px;cursor:pointer">✕</button>`;
-    c.appendChild(d);
+function addOrderItem(){
+  const div=document.createElement('div');div.style.cssText='display:grid;grid-template-columns:1fr 80px 36px;gap:8px;margin-bottom:8px;align-items:start';
+  div.innerHTML=`<select class="op" onchange="calcTotal()" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px">
+    <option value="">選擇商品</option>${products.map(p=>`<option value="${p.id}" data-price="${p.price}" data-name="${esc(p.name)}">${esc(p.name)} (${fmtMoney(p.price)})</option>`).join('')}
+    </select><input type="number" class="oq" value="1" min="1" onchange="calcTotal()" oninput="calcTotal()" style="padding:10px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;text-align:center">
+    <button class="btn btn-danger btn-sm" onclick="this.parentElement.remove();calcTotal()" style="height:40px;justify-content:center">✕</button>`;
+  document.getElementById('order-items').appendChild(div);
 }
 function calcTotal(){
-    let t=0;document.querySelectorAll('#sale-items>div').forEach(r=>{
-        const s=r.querySelector('.sale-product'),q=parseInt(r.querySelector('.sale-qty').value)||0,o=s.options[s.selectedIndex],p=o?parseFloat(o.dataset.price)||0:0,st=p*q;
-        r.querySelector('.sale-subtotal').value='$'+st.toLocaleString();t+=st});
-    document.getElementById('sale-total').value=t;
+  let t=0;document.querySelectorAll('#order-items>div').forEach(r=>{
+    const s=r.querySelector('.op'),q=parseInt(r.querySelector('.oq').value)||0,o=s.options[s.selectedIndex];
+    t+=(o?parseFloat(o.dataset.price)||0:0)*q;
+  });document.getElementById('order-total').value=fmtMoney(t);
 }
-async function saveSale(){
-    const cid=document.getElementById('sale-customer').value,date=document.getElementById('sale-date').value,total=parseFloat(document.getElementById('sale-total').value)||0,notes=document.getElementById('sale-notes').value.trim();
-    if(!cid){alert('請選擇客戶');return}
-    const items=[];document.querySelectorAll('#sale-items>div').forEach(r=>{
-        const s=r.querySelector('.sale-product'),q=parseInt(r.querySelector('.sale-qty').value)||0;
-        if(s.value&&q>0){const p=productsData.find(x=>x.id==s.value);items.push({product_id:parseInt(s.value),name:p?p.name:'',price:p?p.price:0,qty:q})}});
-    if(!items.length){alert('請至少新增一個銷售項目');return}
-    const{error}=await db.from('transactions').insert({customer_id:parseInt(cid),date,items,total,notes});
-    if(error){alert('儲存失敗：'+error.message);return}
-    for(const i of items){const p=productsData.find(x=>x.id===i.product_id);if(p)await db.from('products').update({stock:p.stock-i.qty}).eq('id',i.product_id)}
-    closeModal('sale');loadSales();loadProducts();
+async function saveOrder(){
+  const cid=document.getElementById('order-customer').value;
+  if(!cid){toast('請選擇客戶','error');return}
+  const items=[];let ok=true;
+  document.querySelectorAll('#order-items>div').forEach(r=>{
+    const s=r.querySelector('.op'),q=parseInt(r.querySelector('.oq').value)||0,o=s.options[s.selectedIndex];
+    if(!s.value||q<=0){ok=false;return}
+    items.push({product_id:+s.value,name:o.dataset.name,qty:q,price:+o.dataset.price,subtotal:(+o.dataset.price)*q});
+  });
+  if(!ok||!items.length){toast('請新增有效商品項目','error');return}
+  const total=items.reduce((s,i)=>s+i.subtotal,0);
+  const{error}=await db.from('orders').insert([{customer_id:+cid,order_items:items,total_amount:total,payment_status:document.getElementById('order-status').value,notes:document.getElementById('order-notes').value.trim(),order_date:new Date().toISOString()}]);
+  if(error){toast('建立失敗: '+error.message,'error');return}
+  // 更新庫存
+  for(const i of items){const p=products.find(x=>x.id===i.product_id);if(p)await db.from('products').update({stock:Math.max(0,p.stock-i.qty)}).eq('id',i.product_id)}
+  toast('訂單已建立');closeModal('order-modal');loadOrders();loadProducts();
 }
-async function deleteSale(id){if(!confirm('確定要刪除此銷售記錄？'))return;await db.from('transactions').delete().eq('id',id);loadSales()}
+async function deleteOrder(id){
+  if(!confirm('確定刪除此訂單？'))return;
+  const{error}=await db.from('orders').delete().eq('id',id);
+  if(error){toast('刪除失敗','error');return}
+  toast('訂單已刪除');loadOrders();
+}
 
-// 儀表板
+// ==================== DASHBOARD ====================
 async function loadDashboard(){
-    const[cr,pr,sr]=await Promise.all([db.from('customers').select('*'),db.from('products').select('*'),db.from('transactions').select('*,customers(name)').order('date',{ascending:false})]);
-    customersData=cr.data||[];productsData=pr.data||[];salesData=sr.data||[];
-    document.getElementById('stat-customers').textContent=customersData.length;
-    document.getElementById('stat-products').textContent=productsData.length;
-    const ti=salesData.reduce((s,x)=>s+Number(x.total),0);document.getElementById('stat-total').textContent='$'+ti.toLocaleString();
-    const now=new Date(),ms=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
-    const mi=salesData.filter(s=>s.date>=ms).reduce((s,x)=>s+Number(x.total),0);document.getElementById('stat-monthly').textContent='$'+mi.toLocaleString();
-    const ls=productsData.filter(p=>p.stock<5);
-    if(!ls.length){document.getElementById('low-stock-list').innerHTML='<p style="color:#94a3b8">✅ 所有產品庫存正常</p>'}
-    else{let h='<table><thead><tr><th>產品</th><th>庫存</th></tr></thead><tbody>';ls.forEach(p=>{h+=`<tr><td>${p.name}</td><td><span class="badge ${p.stock<=0?'badge-red':'badge-yellow'}">${p.stock}</span></td></tr>`});h+='</tbody></table>';document.getElementById('low-stock-list').innerHTML=h}
-    const rc=salesData.slice(0,5);
-    if(!rc.length){document.getElementById('recent-sales').innerHTML='<p style="color:#94a3b8">尚無銷售記錄</p>'}
-    else{let h='<table><thead><tr><th>日期</th><th>客戶</th><th>金額</th></tr></thead><tbody>';rc.forEach(s=>{h+=`<tr><td>${s.date}</td><td>${s.customers?s.customers.name:'-'}</td><td><strong>$${Number(s.total).toLocaleString()}</strong></td></tr>`});h+='</tbody></table>';document.getElementById('recent-sales').innerHTML=h}
+  const[c,p,o]=await Promise.all([
+    db.from('customers').select('id',{count:'exact',head:true}),
+    db.from('products').select('id',{count:'exact',head:true}),
+    db.from('orders').select('*')
+  ]);
+  document.getElementById('stat-customers').textContent=c.count||0;
+  document.getElementById('stat-products').textContent=p.count||0;
+  document.getElementById('stat-orders').textContent=o.count||0;
+  const rev=(o.data||[]).reduce((s,x)=>s+(+x.total_amount||0),0);
+  document.getElementById('stat-revenue').textContent=fmtMoney(rev);
+
+  const recent=(o.data||[]).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
+  const tb=document.getElementById('recent-orders-body');
+  if(!recent.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-light)">暫無訂單</td></tr>';return}
+  const cids=[...new Set(recent.map(x=>x.customer_id).filter(Boolean))];
+  let cm={};if(cids.length){const{data}=await db.from('customers').select('id,name').in('id',cids);(data||[]).forEach(c=>cm[c.id]=c.name)}
+  tb.innerHTML=recent.map(o=>{
+    const bc=o.payment_status==='已付款'?'badge-green':o.payment_status==='部分付款'?'badge-yellow':'badge-red';
+    return`<tr><td>#${o.id}</td><td>${esc(cm[o.customer_id]||'-')}</td><td><strong>${fmtMoney(o.total_amount)}</strong></td><td><span class="badge ${bc}">${esc(o.payment_status||'-')}</span></td><td>${fmtDate(o.order_date)}</td></tr>`
+  }).join('');
 }
 
-document.getElementById('currentDate').textContent=new Date().toLocaleDateString('zh-TW');
-loadDashboard();
+// ==================== INIT ====================
+async function init(){
+  await Promise.all([loadCustomers(),loadProducts(),loadOrders()]);
+  loadDashboard();
+}
+init();
 </script>
 </body>
 </html>
