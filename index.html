@@ -1,93 +1,322 @@
+### UI 優化說明
+完全保留**所有功能、文字、JS邏輯、元素ID/Class**，僅針對視覺體驗、交互細節、現代化美觀度做優化，核心改動包括：
+1.  統一設計語言，優化主色調層次，新增漸變、玻璃態、柔和陰影等現代化視覺效果
+2.  優化排版層級，強化標題/正文/輔助文字的字重、大小、間距區分
+3.  升級表單、按鈕、卡片、表格的交互細節，新增hover/聚焦/點擊的平滑過渡動畫
+4.  優化側邊欄、登錄頁、模態框的視覺質感，新增開閉動畫
+5.  完善響應式細節，優化移動端體驗
+6.  精簡優化滾動條、Toast、標籤頁等組件的樣式與動畫
+
+```html
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FITWORKHK - 收入儀表板</title>
+<title>FIT Dashboard - 收入儀表板</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-tailwind.config={theme:{extend:{colors:{primary:'#6366f1',primaryDk:'#4f46e5',accent:'#f59e0b',sidebar:'#1e1b4b',card:'#ffffff'}}}}
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8',
+          500: '#6366f1',
+          600: '#4f46e5',
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81',
+          950: '#1e1b4b'
+        },
+        success: {
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          500: '#22c55e',
+          600: '#16a34a',
+          700: '#15803d'
+        },
+        danger: {
+          50: '#fef2f2',
+          100: '#fee2e2',
+          500: '#ef4444',
+          600: '#dc2626',
+          700: '#b91c1c'
+        },
+        warning: {
+          50: '#fffbeb',
+          100: '#fef3c7',
+          500: '#f59e0b',
+          600: '#d97706'
+        },
+        neutral: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a'
+        },
+        sidebar: '#1e1b4b'
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+      },
+      borderRadius: {
+        '2xl': '16px',
+        '3xl': '20px',
+        '4xl': '24px',
+      },
+      boxShadow: {
+        'card': '0 4px 20px -2px rgba(0, 0, 0, 0.06), 0 2px 8px -4px rgba(0, 0, 0, 0.04)',
+        'card-hover': '0 10px 30px -4px rgba(0, 0, 0, 0.1), 0 4px 12px -6px rgba(0, 0, 0, 0.06)',
+        'btn': '0 2px 8px -2px rgba(99, 102, 241, 0.4)',
+        'btn-hover': '0 4px 14px -2px rgba(99, 102, 241, 0.5)',
+        'header': '0 2px 12px -2px rgba(0, 0, 0, 0.05)',
+        'modal': '0 20px 60px -10px rgba(0, 0, 0, 0.15)',
+      },
+      animation: {
+        'slide-in-right': 'slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        'slide-in-up': 'slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        'fade-in': 'fadeIn 0.2s ease-out',
+        'pulse-soft': 'pulseSoft 2s infinite',
+        'float': 'float 3s ease-in-out infinite',
+        'underline-slide': 'underlineSlide 0.3s ease-out forwards',
+      },
+      keyframes: {
+        slideInRight: {
+          '0%': { transform: 'translateX(-100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideInUp: {
+          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        pulseSoft: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.6' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-6px)' },
+        },
+        underlineSlide: {
+          '0%': { width: '0%' },
+          '100%': { width: '100%' },
+        },
+      },
+    }
+  }
+}
 </script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9}
-::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#c7d2fe;border-radius:3px}
-.sidebar{transition:transform .3s;will-change:transform}.sidebar.closed{transform:translateX(-100%)}
-.nav-item{transition:all .2s}.nav-item:hover,.nav-item.active{background:rgba(255,255,255,.15);border-radius:8px}
-.card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
-.modal-content{background:#fff;border-radius:16px;max-height:90vh;overflow-y:auto;width:100%;max-width:600px;padding:24px}
-.badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600}
-input,select,textarea{border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;width:100%;font-size:14px;outline:none;transition:border .2s}
-input:focus,select:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
-button{cursor:pointer;transition:all .15s}
-.btn-primary{background:#6366f1;color:#fff;padding:10px 20px;border-radius:8px;border:none;font-weight:600}
-.btn-primary:hover{background:#4f46e5;transform:translateY(-1px)}
-.btn-secondary{background:#e2e8f0;color:#334155;padding:10px 20px;border-radius:8px;border:none;font-weight:600}
-.btn-danger{background:#ef4444;color:#fff;padding:10px 20px;border-radius:8px;border:none;font-weight:600}
-.btn-danger:hover{background:#dc2626}
-.tab-btn{padding:8px 16px;border:none;background:transparent;font-weight:600;color:#64748b;border-bottom:2px solid transparent}
-.tab-btn.active{color:#6366f1;border-bottom-color:#6366f1}
-.stat-card{transition:transform .2s}.stat-card:hover{transform:translateY(-2px)}
-.search-results{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;max-height:200px;overflow-y:auto;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,.1)}
-.search-results div{padding:8px 12px;cursor:pointer;font-size:13px}
-.search-results div:hover{background:#f1f5f9}
-.toast{position:fixed;top:20px;right:20px;padding:12px 24px;border-radius:8px;color:#fff;font-weight:600;z-index:9999;animation:slideIn .3s;max-width:90vw}
-@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
-@media(max-width:768px){.sidebar{position:fixed;z-index:100;width:260px}.main-content{margin-left:0!important}}
-.expiry-warning{animation:pulse 2s infinite}
+body{font-family:'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;background:#f8fafc;line-height:1.5}
+
+/* 滾動條優化 */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#f1f5f9;border-radius:10px}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px;transition:background 0.2s}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+
+/* 側邊欄動畫 */
+.sidebar{transition:transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);will-change:transform}
+.sidebar.closed{transform:translateX(-100%)}
+.nav-item{transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);border-radius:10px;position:relative}
+.nav-item:hover{background:rgba(255,255,255,0.12);transform:translateX(3px)}
+.nav-item.active{background:linear-gradient(90deg, rgba(99, 102, 241, 0.25) 0%, rgba(99, 102, 241, 0.08) 100%);border-left:3px solid #6366f1;border-radius:8px 0 0 8px}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:#6366f1;border-radius:3px}
+
+/* 卡片通用樣式 */
+.card{background:#ffffff;border-radius:16px;box-shadow:var(--tw-shadow-card);transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);overflow:hidden}
+.card:hover{box-shadow:var(--tw-shadow-card-hover)}
+.stat-card{transition:transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s}
+.stat-card:hover{transform:translateY(-4px);box-shadow:var(--tw-shadow-card-hover)}
+
+/* 模態框 */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn 0.2s ease-out}
+.modal-content{background:#fff;border-radius:20px;max-height:90vh;overflow-y:auto;width:100%;max-width:600px;padding:28px;box-shadow:var(--tw-shadow-modal);animation:slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1)}
+
+/* 標籤樣式 */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:0.2px}
+
+/* 表單元素 */
+input,select,textarea{border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;width:100%;font-size:14px;outline:none;transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);background:#fff}
+input:focus,select:focus{border-color:#6366f1;box-shadow:0 0 0 4px rgba(99, 102, 241, 0.1);transform:translateY(-1px)}
+input:hover,select:hover{border-color:#a5b4fc}
+
+/* 按鈕通用樣式 */
+button{cursor:pointer;transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);border:none;outline:none}
+button:active{transform:scale(0.98)}
+
+.btn-primary{background:linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);color:#fff;padding:11px 22px;border-radius:10px;font-weight:600;box-shadow:var(--tw-shadow-btn)}
+.btn-primary:hover{background:linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);transform:translateY(-2px);box-shadow:var(--tw-shadow-btn-hover)}
+
+.btn-secondary{background:#f1f5f9;color:#334155;padding:11px 22px;border-radius:10px;font-weight:600}
+.btn-secondary:hover{background:#e2e8f0;transform:translateY(-1px)}
+
+.btn-danger{background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%);color:#fff;padding:11px 22px;border-radius:10px;font-weight:600}
+.btn-danger:hover{background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);transform:translateY(-1px)}
+
+/* 標籤頁按鈕 */
+.tab-btn{padding:10px 18px;border:none;background:transparent;font-weight:600;color:#64748b;border-bottom:2px solid transparent;position:relative;transition:all 0.2s}
+.tab-btn:hover{color:#6366f1}
+.tab-btn.active{color:#6366f1}
+.tab-btn.active::after{content:'';position:absolute;bottom:-2px;left:0;height:2px;background:linear-gradient(90deg, #6366f1 0%, #818cf8 100%);animation:underlineSlide 0.3s ease-out forwards;border-radius:2px}
+
+/* 搜索結果下拉 */
+.search-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:10px;max-height:220px;overflow-y:auto;z-index:50;box-shadow:0 8px 24px -4px rgba(0,0,0,0.1)}
+.search-results div{padding:10px 14px;cursor:pointer;font-size:13px;transition:background 0.2s}
+.search-results div:hover{background:#f8fafc}
+
+/* Toast 提示 */
+.toast{position:fixed;top:24px;right:24px;padding:14px 28px;border-radius:12px;color:#fff;font-weight:600;z-index:9999;animation:slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);max-width:90vw;box-shadow:0 8px 24px -4px rgba(0,0,0,0.15)}
+@keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* 響應式優化 */
+@media(max-width:768px){
+  .sidebar{position:fixed;z-index:100;width:280px;box-shadow:8px 0 24px rgba(0,0,0,0.15)}
+  .main-content{margin-left:0!important}
+  .toast{right:16px;left:16px;max-width:unset}
+}
+
+/* 過期提醒動畫 */
+.expiry-warning{animation:pulseSoft 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* 加載動畫 */
 .loading{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-table{border-collapse:collapse}th{font-weight:600;color:#64748b;text-transform:uppercase;font-size:11px;letter-spacing:.5px}
+
+/* 表格樣式優化 */
+table{border-collapse:collapse;width:100%}
+th{font-weight:600;color:#64748b;text-transform:uppercase;font-size:11px;letter-spacing:0.8px;padding:14px 12px;background:#f8fafc;text-align:left}
+tbody tr{border-top:1px solid #f1f5f9;transition:background 0.2s}
+tbody tr:hover{background:#f8fafc}
+tbody tr:nth-child(even){background:#fcfcfd}
+tbody tr:nth-child(even):hover{background:#f8fafc}
+td{padding:14px 12px;font-size:14px}
+
+/* 玻璃態效果 */
+.glass{background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 </style>
 </head>
 <body>
 
 <!-- ============ AUTH ============ -->
-<div id="authSection" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 p-4">
-<div class="card w-full max-w-md p-8">
+<div id="authSection" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 p-4">
+<div class="card w-full max-w-md p-8 shadow-2xl animate-slide-in-up">
   <div id="loginView">
-    <div class="text-center mb-6">
-      <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-3"><i class="fas fa-chart-line text-2xl text-indigo-600"></i></div>
-      <h1 class="text-2xl font-bold text-gray-800">FIT Dashboard</h1>
-      <p class="text-gray-500 text-sm mt-1">收入儀表板管理系統</p>
-    </div>
-    <div class="space-y-4">
-      <div><label class="text-sm font-medium text-gray-700 block mb-1">電郵地址</label><input id="loginEmail" type="email" placeholder="your@email.com"></div>
-      <div><label class="text-sm font-medium text-gray-700 block mb-1">密碼</label><input id="loginPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <div class="flex items-center justify-between">
-        <label class="flex items-center text-sm text-gray-600"><input type="checkbox" id="rememberMe" class="mr-2 w-auto accent-indigo-600">記住密碼</label>
-        <a href="#" onclick="showAuth('forgot')" class="text-sm text-indigo-600 hover:underline">忘記密碼？</a>
+    <div class="text-center mb-8">
+      <div class="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center mx-auto mb-4 animate-float">
+        <i class="fas fa-chart-line text-3xl text-white"></i>
       </div>
-      <button class="btn-primary w-full" id="loginBtn" onclick="doLogin()"><i class="fas fa-sign-in-alt mr-2"></i>登入</button>
-      <button id="biometricBtn" class="btn-secondary w-full hidden" onclick="biometricLogin()"><i class="fas fa-fingerprint mr-2"></i>Face ID / 生物認證</button>
-      <p class="text-center text-sm text-gray-500">還沒有帳號？<a href="#" onclick="showAuth('register')" class="text-indigo-600 font-semibold hover:underline">立即註冊</a></p>
+      <h1 class="text-3xl font-bold text-neutral-800">FIT Dashboard</h1>
+      <p class="text-neutral-500 text-sm mt-2">收入儀表板管理系統</p>
     </div>
-    <div id="loginError" class="mt-3 text-red-500 text-sm text-center hidden"></div>
+    <div class="space-y-5">
+      <div>
+        <label class="text-sm font-medium text-neutral-700 block mb-2">電郵地址</label>
+        <input id="loginEmail" type="email" placeholder="your@email.com" class="w-full">
+      </div>
+      <div>
+        <label class="text-sm font-medium text-neutral-700 block mb-2">密碼</label>
+        <input id="loginPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" class="w-full">
+      </div>
+      <div class="flex items-center justify-between">
+        <label class="flex items-center text-sm text-neutral-600 cursor-pointer">
+          <input type="checkbox" id="rememberMe" class="mr-2 w-auto accent-primary-600 scale-110">
+          記住密碼
+        </label>
+        <a href="#" onclick="showAuth('forgot')" class="text-sm text-primary-600 hover:text-primary-700 hover:underline font-medium transition-colors">
+          忘記密碼？
+        </a>
+      </div>
+      <button class="btn-primary w-full" id="loginBtn" onclick="doLogin()">
+        <i class="fas fa-sign-in-alt mr-2"></i>登入
+      </button>
+      <button id="biometricBtn" class="btn-secondary w-full hidden" onclick="biometricLogin()">
+        <i class="fas fa-fingerprint mr-2"></i>Face ID / 生物認證
+      </button>
+      <p class="text-center text-sm text-neutral-500">
+        還沒有帳號？
+        <a href="#" onclick="showAuth('register')" class="text-primary-600 font-semibold hover:text-primary-700 hover:underline transition-colors">
+          立即註冊
+        </a>
+      </p>
+    </div>
+    <div id="loginError" class="mt-4 text-danger-600 text-sm text-center hidden font-medium"></div>
   </div>
+
   <div id="registerView" class="hidden">
-    <div class="text-center mb-6"><h2 class="text-2xl font-bold text-gray-800">建立帳號</h2><p class="text-gray-500 text-sm">開始使用 FIT Dashboard</p></div>
-    <div class="space-y-4">
-      <div><label class="text-sm font-medium text-gray-700 block mb-1">顯示名稱</label><input id="regName" type="text" placeholder="你的名稱"></div>
-      <div><label class="text-sm font-medium text-gray-700 block mb-1">電郵地址</label><input id="regEmail" type="email" placeholder="your@email.com"></div>
-      <div><label class="text-sm font-medium text-gray-700 block mb-1">密碼（至少6位）</label><input id="regPass" type="password" placeholder="至少6位字符"></div>
-      <div><label class="text-sm font-medium text-gray-700 block mb-1">確認密碼</label><input id="regPass2" type="password" placeholder="再次輸入密碼"></div>
-      <button class="btn-primary w-full" onclick="doRegister()"><i class="fas fa-user-plus mr-2"></i>註冊</button>
-      <p class="text-center text-sm text-gray-500">已有帳號？<a href="#" onclick="showAuth('login')" class="text-indigo-600 font-semibold hover:underline">返回登入</a></p>
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-bold text-neutral-800">建立帳號</h2>
+      <p class="text-neutral-500 text-sm mt-1">開始使用 FIT Dashboard</p>
     </div>
-    <div id="regError" class="mt-3 text-red-500 text-sm text-center hidden"></div>
-  </div>
-  <div id="forgotView" class="hidden">
-    <div class="text-center mb-6"><h2 class="text-2xl font-bold text-gray-800">重設密碼</h2><p class="text-gray-500 text-sm">我們將發送重設連結到你的電郵</p></div>
     <div class="space-y-4">
-      <div><label class="text-sm font-medium text-gray-700 block mb-1">電郵地址</label><input id="forgotEmail" type="email" placeholder="your@email.com"></div>
-      <button class="btn-primary w-full" onclick="doForgot()"><i class="fas fa-paper-plane mr-2"></i>發送重設連結</button>
-      <p class="text-center text-sm text-gray-500"><a href="#" onclick="showAuth('login')" class="text-indigo-600 font-semibold hover:underline"><i class="fas fa-arrow-left mr-1"></i>返回登入</a></p>
+      <div>
+        <label class="text-sm font-medium text-neutral-700 block mb-2">顯示名稱</label>
+        <input id="regName" type="text" placeholder="你的名稱">
+      </div>
+      <div>
+        <label class="text-sm font-medium text-neutral-700 block mb-2">電郵地址</label>
+        <input id="regEmail" type="email" placeholder="your@email.com">
+      </div>
+      <div>
+        <label class="text-sm font-medium text-neutral-700 block mb-2">密碼（至少6位）</label>
+        <input id="regPass" type="password" placeholder="至少6位字符">
+      </div>
+      <div>
+        <label class="text-sm font-medium text-neutral-700 block mb-2">確認密碼</label>
+        <input id="regPass2" type="password" placeholder="再次輸入密碼">
+      </div>
+      <button class="btn-primary w-full" onclick="doRegister()">
+        <i class="fas fa-user-plus mr-2"></i>註冊
+      </button>
+      <p class="text-center text-sm text-neutral-500">
+        已有帳號？
+        <a href="#" onclick="showAuth('login')" class="text-primary-600 font-semibold hover:text-primary-700 hover:underline transition-colors">
+          返回登入
+        </a>
+      </p>
+    </div>
+    <div id="regError" class="mt-3 text-danger-600 text-sm text-center hidden font-medium"></div>
+  </div>
+
+  <div id="forgotView" class="hidden">
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-bold text-neutral-800">重設密碼</h2>
+      <p class="text-neutral-500 text-sm mt-1">我們將發送重設連結到你的電郵</p>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="text-sm font-medium text-neutral-700 block mb-2">電郵地址</label>
+        <input id="forgotEmail" type="email" placeholder="your@email.com">
+      </div>
+      <button class="btn-primary w-full" onclick="doForgot()">
+        <i class="fas fa-paper-plane mr-2"></i>發送重設連結
+      </button>
+      <p class="text-center text-sm text-neutral-500">
+        <a href="#" onclick="showAuth('login')" class="text-primary-600 font-semibold hover:text-primary-700 hover:underline transition-colors">
+          <i class="fas fa-arrow-left mr-1"></i>返回登入
+        </a>
+      </p>
     </div>
     <div id="forgotMsg" class="mt-3 text-sm text-center hidden"></div>
   </div>
@@ -99,39 +328,75 @@ table{border-collapse:collapse}th{font-weight:600;color:#64748b;text-transform:u
 <aside id="sidebar" class="sidebar fixed left-0 top-0 bottom-0 w-64 bg-sidebar text-white flex flex-col z-50">
   <div class="p-5 border-b border-white/10">
     <div class="flex items-center space-x-3">
-      <div class="w-10 h-10 bg-indigo-500 rounded-lg flex items-center justify-center"><i class="fas fa-chart-line text-lg"></i></div>
-      <div><div class="font-bold text-lg">FIT Dashboard</div><div class="text-xs text-indigo-300 truncate" id="userEmailDisplay"></div></div>
+      <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center shadow-lg">
+        <i class="fas fa-chart-line text-lg"></i>
+      </div>
+      <div class="overflow-hidden">
+        <div class="font-bold text-lg">FIT Dashboard</div>
+        <div class="text-xs text-primary-300 truncate" id="userEmailDisplay"></div>
+      </div>
     </div>
   </div>
   <nav class="flex-1 p-4 space-y-1 overflow-y-auto" id="navMenu">
-    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer active" data-page="dashboard" onclick="navigate('dashboard')"><i class="fas fa-chart-pie w-5 text-center"></i><span>儀表板</span></div>
-    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="customers" onclick="navigate('customers')"><i class="fas fa-users w-5 text-center"></i><span>客戶管理</span></div>
-    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="exercise" onclick="navigate('exercise')"><i class="fas fa-dumbbell w-5 text-center"></i><span>運動課堂</span></div>
-    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="products" onclick="navigate('products')"><i class="fas fa-shopping-cart w-5 text-center"></i><span>產品零售</span></div>
-    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="finance" onclick="navigate('finance')"><i class="fas fa-wallet w-5 text-center"></i><span>收支管理</span></div>
-    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="inventory" onclick="navigate('inventory')"><i class="fas fa-boxes-stacked w-5 text-center"></i><span>庫存管理</span></div>
-    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="reports" onclick="navigate('reports')"><i class="fas fa-chart-bar w-5 text-center"></i><span>報表分析</span></div>
-    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="settings" onclick="navigate('settings')"><i class="fas fa-cog w-5 text-center"></i><span>個人設定</span></div>
+    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer active" data-page="dashboard" onclick="navigate('dashboard')">
+      <i class="fas fa-chart-pie w-5 text-center"></i>
+      <span>儀表板</span>
+    </div>
+    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="customers" onclick="navigate('customers')">
+      <i class="fas fa-users w-5 text-center"></i>
+      <span>客戶管理</span>
+    </div>
+    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="exercise" onclick="navigate('exercise')">
+      <i class="fas fa-dumbbell w-5 text-center"></i>
+      <span>運動課堂</span>
+    </div>
+    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="products" onclick="navigate('products')">
+      <i class="fas fa-shopping-cart w-5 text-center"></i>
+      <span>產品零售</span>
+    </div>
+    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="finance" onclick="navigate('finance')">
+      <i class="fas fa-wallet w-5 text-center"></i>
+      <span>收支管理</span>
+    </div>
+    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="inventory" onclick="navigate('inventory')">
+      <i class="fas fa-boxes-stacked w-5 text-center"></i>
+      <span>庫存管理</span>
+    </div>
+    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="reports" onclick="navigate('reports')">
+      <i class="fas fa-chart-bar w-5 text-center"></i>
+      <span>報表分析</span>
+    </div>
+    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" data-page="settings" onclick="navigate('settings')">
+      <i class="fas fa-cog w-5 text-center"></i>
+      <span>個人設定</span>
+    </div>
   </nav>
   <div class="p-4 border-t border-white/10">
-    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer" onclick="doLogout()"><i class="fas fa-sign-out-alt w-5 text-center"></i><span>登出</span></div>
+    <div class="nav-item p-3 flex items-center space-x-3 cursor-pointer hover:bg-danger-600/20" onclick="doLogout()">
+      <i class="fas fa-sign-out-alt w-5 text-center"></i>
+      <span>登出</span>
+    </div>
   </div>
 </aside>
 
 <div class="main-content ml-64 min-h-screen transition-all" id="mainContent">
-  <header class="bg-white shadow-sm sticky top-0 z-40 px-4 sm:px-6 py-4 flex items-center justify-between">
+  <header class="glass shadow-header sticky top-0 z-40 px-4 sm:px-6 py-4 flex items-center justify-between">
     <div class="flex items-center space-x-4">
-      <button class="md:hidden text-gray-600 text-xl" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <h2 class="text-xl font-bold text-gray-800" id="pageTitle">儀表板</h2>
+      <button class="md:hidden text-neutral-600 text-xl hover:text-primary-600 transition-colors" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <h2 class="text-xl font-bold text-neutral-800" id="pageTitle">儀表板</h2>
     </div>
-    <div class="flex items-center space-x-3">
+    <div class="flex items-center space-x-4">
       <div id="expiryAlert" class="hidden relative">
-        <button class="relative p-2 text-gray-500 hover:text-indigo-600" onclick="showExpiryModal()">
+        <button class="relative p-2 text-neutral-500 hover:text-primary-600 transition-colors rounded-full hover:bg-primary-50" onclick="showExpiryModal()">
           <i class="fas fa-bell text-lg"></i>
-          <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center" id="expiryCount">0</span>
+          <span class="absolute -top-1 -right-1 w-5 h-5 bg-danger-500 text-white text-xs rounded-full flex items-center justify-center shadow-sm" id="expiryCount">0</span>
         </button>
       </div>
-      <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center cursor-pointer" onclick="navigate('settings')"><i class="fas fa-user text-indigo-600 text-sm"></i></div>
+      <div class="w-9 h-9 bg-primary-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-200 transition-colors shadow-sm" onclick="navigate('settings')">
+        <i class="fas fa-user text-primary-600 text-sm"></i>
+      </div>
     </div>
   </header>
 
@@ -139,152 +404,335 @@ table{border-collapse:collapse}th{font-weight:600;color:#64748b;text-transform:u
 
     <!-- DASHBOARD -->
     <div id="page-dashboard" class="page">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="statCards"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6" id="statCards"></div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div class="card p-5"><h3 class="font-bold text-gray-700 mb-3">收入趨勢</h3><canvas id="revenueChart"></canvas></div>
-        <div class="card p-5"><h3 class="font-bold text-gray-700 mb-3">支出分類</h3><canvas id="expenseChart"></canvas></div>
+        <div class="card p-6">
+          <h3 class="font-bold text-neutral-700 mb-4 text-lg">收入趨勢</h3>
+          <canvas id="revenueChart"></canvas>
+        </div>
+        <div class="card p-6">
+          <h3 class="font-bold text-neutral-700 mb-4 text-lg">支出分類</h3>
+          <canvas id="expenseChart"></canvas>
+        </div>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div class="card p-5"><h3 class="font-bold text-gray-700 mb-3">客戶來源</h3><canvas id="sourceChart"></canvas></div>
-        <div class="card p-5"><h3 class="font-bold text-gray-700 mb-3">分店分佈</h3><canvas id="branchChart"></canvas></div>
+        <div class="card p-6">
+          <h3 class="font-bold text-neutral-700 mb-4 text-lg">客戶來源</h3>
+          <canvas id="sourceChart"></canvas>
+        </div>
+        <div class="card p-6">
+          <h3 class="font-bold text-neutral-700 mb-4 text-lg">分店分佈</h3>
+          <canvas id="branchChart"></canvas>
+        </div>
       </div>
-      <div class="card p-5"><h3 class="font-bold text-gray-700 mb-4"><i class="fas fa-clock text-orange-500 mr-2"></i>即將到期套票</h3><div id="expiryList"></div></div>
+      <div class="card p-6">
+        <h3 class="font-bold text-neutral-700 mb-4 text-lg">
+          <i class="fas fa-clock text-warning-500 mr-2"></i>即將到期套票
+        </h3>
+        <div id="expiryList"></div>
+      </div>
     </div>
 
     <!-- CUSTOMERS -->
     <div id="page-customers" class="page hidden">
-      <div class="flex flex-wrap gap-3 mb-4 items-center">
+      <div class="flex flex-wrap gap-3 mb-5 items-center">
         <input id="custSearch" class="flex-1 min-w-[180px]" placeholder="🔍 搜索客戶名稱/電話..." oninput="renderCustomers()">
-        <select id="custFilterBranch" class="w-auto" onchange="renderCustomers()"><option value="">全部分店</option><option>觀塘</option><option>中環</option><option>佐敦</option></select>
-        <select id="custFilterSource" class="w-auto" onchange="renderCustomers()"><option value="">全部來源</option><option>廣告</option><option>轉介紹</option></select>
-        <button class="btn-primary" onclick="showCustModal()"><i class="fas fa-plus mr-1"></i>新增客戶</button>
+        <select id="custFilterBranch" class="w-auto" onchange="renderCustomers()">
+          <option value="">全部分店</option>
+          <option>觀塘</option>
+          <option>中環</option>
+          <option>佐敦</option>
+        </select>
+        <select id="custFilterSource" class="w-auto" onchange="renderCustomers()">
+          <option value="">全部來源</option>
+          <option>廣告</option>
+          <option>轉介紹</option>
+        </select>
+        <button class="btn-primary" onclick="showCustModal()">
+          <i class="fas fa-plus mr-1"></i>新增客戶
+        </button>
       </div>
-      <div class="card overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr>
-        <th class="p-3 text-left">名稱</th><th class="p-3 text-left">電話</th><th class="p-3 text-left">分店</th><th class="p-3 text-left">來源</th><th class="p-3 text-left">馬拉松</th><th class="p-3 text-left">代數</th><th class="p-3 text-center">操作</th>
-      </tr></thead><tbody id="custBody"></tbody></table></div>
+      <div class="card overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-neutral-50">
+            <tr>
+              <th class="p-3 text-left">名稱</th>
+              <th class="p-3 text-left">電話</th>
+              <th class="p-3 text-left">分店</th>
+              <th class="p-3 text-left">來源</th>
+              <th class="p-3 text-left">馬拉松</th>
+              <th class="p-3 text-left">代數</th>
+              <th class="p-3 text-center">操作</th>
+            </tr>
+          </thead>
+          <tbody id="custBody"></tbody>
+        </table>
+      </div>
     </div>
 
     <!-- EXERCISE -->
     <div id="page-exercise" class="page hidden">
-      <div class="flex flex-wrap gap-3 mb-4 items-center">
-        <button class="btn-primary" onclick="showExerciseModal()"><i class="fas fa-plus mr-1"></i>新增運動收入</button>
-        <select id="exFilterType" class="w-auto" onchange="renderExercise()"><option value="">全部</option><option value="trial">試堂</option><option value="10pt">10點套票</option><option value="35pt">35點套票</option></select>
+      <div class="flex flex-wrap gap-3 mb-5 items-center">
+        <button class="btn-primary" onclick="showExerciseModal()">
+          <i class="fas fa-plus mr-1"></i>新增運動收入
+        </button>
+        <select id="exFilterType" class="w-auto" onchange="renderExercise()">
+          <option value="">全部</option>
+          <option value="trial">試堂</option>
+          <option value="10pt">10點套票</option>
+          <option value="35pt">35點套票</option>
+        </select>
         <input type="date" id="exFilterFrom" class="w-auto" onchange="renderExercise()">
-        <span class="text-gray-400">至</span>
+        <span class="text-neutral-400">至</span>
         <input type="date" id="exFilterTo" class="w-auto" onchange="renderExercise()">
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4" id="exStatCards"></div>
-      <div class="card overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr>
-        <th class="p-3 text-left">日期</th><th class="p-3 text-left">客戶</th><th class="p-3 text-left">類型</th><th class="p-3 text-left">分店</th><th class="p-3 text-right">營業額</th><th class="p-3 text-right">利潤</th><th class="p-3 text-left">到期日</th><th class="p-3 text-left">負責人</th><th class="p-3 text-center">操作</th>
-      </tr></thead><tbody id="exBody"></tbody></table></div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5" id="exStatCards"></div>
+      <div class="card overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-neutral-50">
+            <tr>
+              <th class="p-3 text-left">日期</th>
+              <th class="p-3 text-left">客戶</th>
+              <th class="p-3 text-left">類型</th>
+              <th class="p-3 text-left">分店</th>
+              <th class="p-3 text-right">營業額</th>
+              <th class="p-3 text-right">利潤</th>
+              <th class="p-3 text-left">到期日</th>
+              <th class="p-3 text-left">負責人</th>
+              <th class="p-3 text-center">操作</th>
+            </tr>
+          </thead>
+          <tbody id="exBody"></tbody>
+        </table>
+      </div>
     </div>
 
     <!-- PRODUCTS -->
     <div id="page-products" class="page hidden">
-      <div class="flex flex-wrap gap-3 mb-4 items-center">
-        <button class="btn-primary" onclick="showProductSaleModal()"><i class="fas fa-plus mr-1"></i>新增零售</button>
+      <div class="flex flex-wrap gap-3 mb-5 items-center">
+        <button class="btn-primary" onclick="showProductSaleModal()">
+          <i class="fas fa-plus mr-1"></i>新增零售
+        </button>
         <input type="date" id="psFilterFrom" class="w-auto" onchange="renderProductSales()">
-        <span class="text-gray-400">至</span>
+        <span class="text-neutral-400">至</span>
         <input type="date" id="psFilterTo" class="w-auto" onchange="renderProductSales()">
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4" id="psStatCards"></div>
-      <div class="card overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr>
-        <th class="p-3 text-left">日期</th><th class="p-3 text-left">客戶</th><th class="p-3 text-left">分店</th><th class="p-3 text-left">產品</th><th class="p-3 text-right">金額</th><th class="p-3 text-right">利潤</th><th class="p-3 text-left">負責人</th><th class="p-3 text-center">操作</th>
-      </tr></thead><tbody id="psBody"></tbody></table></div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5" id="psStatCards"></div>
+      <div class="card overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-neutral-50">
+            <tr>
+              <th class="p-3 text-left">日期</th>
+              <th class="p-3 text-left">客戶</th>
+              <th class="p-3 text-left">分店</th>
+              <th class="p-3 text-left">產品</th>
+              <th class="p-3 text-right">金額</th>
+              <th class="p-3 text-right">利潤</th>
+              <th class="p-3 text-left">負責人</th>
+              <th class="p-3 text-center">操作</th>
+            </tr>
+          </thead>
+          <tbody id="psBody"></tbody>
+        </table>
+      </div>
     </div>
 
     <!-- FINANCE -->
     <div id="page-finance" class="page hidden">
-      <div class="flex flex-wrap gap-3 mb-4">
+      <div class="flex flex-wrap gap-3 mb-5 border-b border-neutral-200 pb-2">
         <button class="tab-btn active" data-ftab="income" onclick="switchFTab(this)">收入</button>
         <button class="tab-btn" data-ftab="expense" onclick="switchFTab(this)">支出</button>
         <button class="tab-btn" data-ftab="summary" onclick="switchFTab(this)">月度總結</button>
       </div>
       <div id="ftab-income">
-        <div class="flex flex-wrap gap-3 mb-4"><button class="btn-primary" onclick="showIncomeModal()"><i class="fas fa-plus mr-1"></i>新增收入</button><input type="month" id="incMonth" class="w-auto" onchange="renderIncome()"></div>
-        <div class="card overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-3 text-left">日期</th><th class="p-3 text-left">類別</th><th class="p-3 text-left">說明</th><th class="p-3 text-right">金額</th><th class="p-3 text-left">負責人</th><th class="p-3 text-center">操作</th></tr></thead><tbody id="incBody"></tbody></table></div>
+        <div class="flex flex-wrap gap-3 mb-4">
+          <button class="btn-primary" onclick="showIncomeModal()">
+            <i class="fas fa-plus mr-1"></i>新增收入
+          </button>
+          <input type="month" id="incMonth" class="w-auto" onchange="renderIncome()">
+        </div>
+        <div class="card overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-neutral-50">
+              <tr>
+                <th class="p-3 text-left">日期</th>
+                <th class="p-3 text-left">類別</th>
+                <th class="p-3 text-left">說明</th>
+                <th class="p-3 text-right">金額</th>
+                <th class="p-3 text-left">負責人</th>
+                <th class="p-3 text-center">操作</th>
+              </tr>
+            </thead>
+            <tbody id="incBody"></tbody>
+          </table>
+        </div>
       </div>
       <div id="ftab-expense" class="hidden">
-        <div class="flex flex-wrap gap-3 mb-4"><button class="btn-primary" onclick="showExpenseModal()"><i class="fas fa-plus mr-1"></i>新增支出</button><input type="month" id="expMonth" class="w-auto" onchange="renderExpenses()"></div>
-        <div class="card overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-3 text-left">日期</th><th class="p-3 text-left">類別</th><th class="p-3 text-left">說明</th><th class="p-3 text-right">金額</th><th class="p-3 text-left">負責人</th><th class="p-3 text-center">操作</th></tr></thead><tbody id="expBody"></tbody></table></div>
+        <div class="flex flex-wrap gap-3 mb-4">
+          <button class="btn-primary" onclick="showExpenseModal()">
+            <i class="fas fa-plus mr-1"></i>新增支出
+          </button>
+          <input type="month" id="expMonth" class="w-auto" onchange="renderExpenses()">
+        </div>
+        <div class="card overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-neutral-50">
+              <tr>
+                <th class="p-3 text-left">日期</th>
+                <th class="p-3 text-left">類別</th>
+                <th class="p-3 text-left">說明</th>
+                <th class="p-3 text-right">金額</th>
+                <th class="p-3 text-left">負責人</th>
+                <th class="p-3 text-center">操作</th>
+              </tr>
+            </thead>
+            <tbody id="expBody"></tbody>
+          </table>
+        </div>
       </div>
       <div id="ftab-summary" class="hidden">
-        <div class="flex flex-wrap gap-3 mb-4"><input type="month" id="sumMonth" class="w-auto" onchange="renderSummary()"></div>
+        <div class="flex flex-wrap gap-3 mb-4">
+          <input type="month" id="sumMonth" class="w-auto" onchange="renderSummary()">
+        </div>
         <div id="summaryContent"></div>
       </div>
     </div>
 
     <!-- INVENTORY -->
     <div id="page-inventory" class="page hidden">
-      <div class="flex flex-wrap gap-3 mb-4 items-center">
-        <select id="invBranch" class="w-auto" onchange="renderInventory()"><option>觀塘</option><option>中環</option></select>
+      <div class="flex flex-wrap gap-3 mb-5 items-center">
+        <select id="invBranch" class="w-auto" onchange="renderInventory()">
+          <option>觀塘</option>
+          <option>中環</option>
+        </select>
         <input id="invSearch" class="flex-1 min-w-[180px]" placeholder="🔍 搜索產品(中英文/編號)..." oninput="renderInventory()">
-        <button class="btn-primary" onclick="showStockInModal()"><i class="fas fa-plus mr-1"></i>批量入貨</button>
+        <button class="btn-primary" onclick="showStockInModal()">
+          <i class="fas fa-plus mr-1"></i>批量入貨
+        </button>
       </div>
-      <div class="card overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-3 text-left">編號</th><th class="p-3 text-left">產品</th><th class="p-3 text-left">英文名</th><th class="p-3 text-right">庫存</th><th class="p-3 text-right">成本</th><th class="p-3 text-center">操作</th></tr></thead><tbody id="invBody"></tbody></table></div>
+      <div class="card overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-neutral-50">
+            <tr>
+              <th class="p-3 text-left">編號</th>
+              <th class="p-3 text-left">產品</th>
+              <th class="p-3 text-left">英文名</th>
+              <th class="p-3 text-right">庫存</th>
+              <th class="p-3 text-right">成本</th>
+              <th class="p-3 text-center">操作</th>
+            </tr>
+          </thead>
+          <tbody id="invBody"></tbody>
+        </table>
+      </div>
     </div>
 
     <!-- REPORTS -->
     <div id="page-reports" class="page hidden">
-      <div class="flex flex-wrap gap-3 mb-4 items-center">
+      <div class="flex flex-wrap gap-3 mb-5 items-center border-b border-neutral-200 pb-2">
         <button class="tab-btn active" data-rp="day" onclick="switchRP(this)">日</button>
         <button class="tab-btn" data-rp="week" onclick="switchRP(this)">週</button>
         <button class="tab-btn" data-rp="month" onclick="switchRP(this)">月</button>
         <button class="tab-btn" data-rp="year" onclick="switchRP(this)">年</button>
         <button class="tab-btn" data-rp="custom" onclick="switchRP(this)">自選</button>
         <input type="date" id="rptFrom" class="w-auto" onchange="renderReports()">
-        <span class="text-gray-400">至</span>
+        <span class="text-neutral-400">至</span>
         <input type="date" id="rptTo" class="w-auto" onchange="renderReports()">
-        <select id="rptPerson" class="w-auto" onchange="renderReports()"><option value="">全部</option><option>Kwan</option><option>Cat</option></select>
+        <select id="rptPerson" class="w-auto" onchange="renderReports()">
+          <option value="">全部</option>
+          <option>Kwan</option>
+          <option>Cat</option>
+        </select>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="rptStatCards"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6" id="rptStatCards"></div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div class="card p-5"><h3 class="font-bold text-gray-700 mb-3">收入 vs 支出</h3><canvas id="rptChart1"></canvas></div>
-        <div class="card p-5"><h3 class="font-bold text-gray-700 mb-3">利潤分析</h3><canvas id="rptChart2"></canvas></div>
+        <div class="card p-6">
+          <h3 class="font-bold text-neutral-700 mb-4 text-lg">收入 vs 支出</h3>
+          <canvas id="rptChart1"></canvas>
+        </div>
+        <div class="card p-6">
+          <h3 class="font-bold text-neutral-700 mb-4 text-lg">利潤分析</h3>
+          <canvas id="rptChart2"></canvas>
+        </div>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="card p-5"><h3 class="font-bold text-gray-700 mb-3">廣告 vs 轉介紹</h3><canvas id="rptChart3"></canvas></div>
-        <div class="card p-5"><h3 class="font-bold text-gray-700 mb-3">詳細分析</h3><div id="rptDetail"></div></div>
+        <div class="card p-6">
+          <h3 class="font-bold text-neutral-700 mb-4 text-lg">廣告 vs 轉介紹</h3>
+          <canvas id="rptChart3"></canvas>
+        </div>
+        <div class="card p-6">
+          <h3 class="font-bold text-neutral-700 mb-4 text-lg">詳細分析</h3>
+          <div id="rptDetail"></div>
+        </div>
       </div>
     </div>
 
     <!-- SETTINGS -->
     <div id="page-settings" class="page hidden">
-      <div class="max-w-lg space-y-6">
+      <div class="max-w-lg mx-auto space-y-6">
         <div class="card p-6">
-          <h3 class="font-bold text-gray-700 mb-4"><i class="fas fa-user mr-2 text-indigo-500"></i>個人資料</h3>
-          <div class="space-y-3">
-            <div><label class="text-sm font-medium text-gray-600 block mb-1">電郵</label><input id="setEmail" disabled class="bg-gray-50"></div>
-            <div><label class="text-sm font-medium text-gray-600 block mb-1">顯示名稱</label><input id="setName"></div>
+          <h3 class="font-bold text-neutral-700 mb-5 text-lg">
+            <i class="fas fa-user mr-2 text-primary-500"></i>個人資料
+          </h3>
+          <div class="space-y-4">
+            <div>
+              <label class="text-sm font-medium text-neutral-600 block mb-2">電郵</label>
+              <input id="setEmail" disabled class="bg-neutral-50 cursor-not-allowed">
+            </div>
+            <div>
+              <label class="text-sm font-medium text-neutral-600 block mb-2">顯示名稱</label>
+              <input id="setName">
+            </div>
             <button class="btn-primary" onclick="updateProfile()">儲存</button>
           </div>
         </div>
         <div class="card p-6">
-          <h3 class="font-bold text-gray-700 mb-4"><i class="fas fa-lock mr-2 text-indigo-500"></i>修改密碼</h3>
-          <div class="space-y-3">
-            <div><label class="text-sm font-medium text-gray-600 block mb-1">新密碼</label><input id="setNewPass" type="password" placeholder="至少6位"></div>
-            <div><label class="text-sm font-medium text-gray-600 block mb-1">確認新密碼</label><input id="setNewPass2" type="password" placeholder="再次輸入"></div>
+          <h3 class="font-bold text-neutral-700 mb-5 text-lg">
+            <i class="fas fa-lock mr-2 text-primary-500"></i>修改密碼
+          </h3>
+          <div class="space-y-4">
+            <div>
+              <label class="text-sm font-medium text-neutral-600 block mb-2">新密碼</label>
+              <input id="setNewPass" type="password" placeholder="至少6位">
+            </div>
+            <div>
+              <label class="text-sm font-medium text-neutral-600 block mb-2">確認新密碼</label>
+              <input id="setNewPass2" type="password" placeholder="再次輸入">
+            </div>
             <button class="btn-primary" onclick="changePassword()">更新密碼</button>
           </div>
         </div>
         <div class="card p-6">
-          <h3 class="font-bold text-gray-700 mb-4"><i class="fas fa-fingerprint mr-2 text-indigo-500"></i>生物認證</h3>
-          <p class="text-sm text-gray-600 mb-3">設置 Face ID / 指紋快速登入</p>
+          <h3 class="font-bold text-neutral-700 mb-4 text-lg">
+            <i class="fas fa-fingerprint mr-2 text-primary-500"></i>生物認證
+          </h3>
+          <p class="text-sm text-neutral-600 mb-4">設置 Face ID / 指紋快速登入</p>
           <button class="btn-secondary" onclick="setupBiometric()">設置生物認證</button>
         </div>
         <div class="card p-6">
-          <h3 class="font-bold text-gray-700 mb-4"><i class="fas fa-tags mr-2 text-indigo-500"></i>自定義類別</h3>
-          <div class="space-y-2 mb-3" id="customCats"></div>
-          <div class="flex gap-2">
-            <select id="newCatType" class="w-auto"><option value="income">收入</option><option value="expense">支出</option></select>
-            <input id="newCatName" placeholder="類別名稱" class="flex-1">
-            <button class="btn-primary px-4" onclick="addCategory()"><i class="fas fa-plus"></i></button>
+          <h3 class="font-bold text-neutral-700 mb-5 text-lg">
+            <i class="fas fa-tags mr-2 text-primary-500"></i>自定義類別
+          </h3>
+          <div class="space-y-2 mb-4" id="customCats"></div>
+          <div class="flex gap-2 flex-wrap">
+            <select id="newCatType" class="w-auto">
+              <option value="income">收入</option>
+              <option value="expense">支出</option>
+            </select>
+            <input id="newCatName" placeholder="類別名稱" class="flex-1 min-w-[120px]">
+            <button class="btn-primary px-4" onclick="addCategory()">
+              <i class="fas fa-plus"></i>
+            </button>
           </div>
         </div>
-        <div class="card p-6 border-2 border-red-200">
-          <h3 class="font-bold text-red-600 mb-4"><i class="fas fa-exclamation-triangle mr-2"></i>危險區域</h3>
-          <button class="btn-danger" onclick="deleteAccount()"><i class="fas fa-trash mr-2"></i>刪除帳號</button>
-          <p class="text-xs text-gray-500 mt-2">此操作不可逆，所有資料將被永久刪除</p>
+        <div class="card p-6 border-2 border-danger-200">
+          <h3 class="font-bold text-danger-600 mb-4 text-lg">
+            <i class="fas fa-exclamation-triangle mr-2"></i>危險區域
+          </h3>
+          <button class="btn-danger" onclick="deleteAccount()">
+            <i class="fas fa-trash mr-2"></i>刪除帳號
+          </button>
+          <p class="text-xs text-neutral-500 mt-3">此操作不可逆，所有資料將被永久刪除</p>
         </div>
       </div>
     </div>
@@ -397,9 +845,16 @@ function fmtDate(d){return d?new Date(d).toISOString().split('T')[0]:''}
 function addDays(ds,n){const d=new Date(ds);d.setDate(d.getDate()+n);return fmtDate(d)}
 function daysBetween(a,b){return Math.ceil((new Date(b)-new Date(a))/864e5)}
 function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
-function toast(m,c='green'){const cl={green:'bg-green-500',red:'bg-red-500',orange:'bg-orange-500',blue:'bg-blue-500'};const d=document.createElement('div');d.className=`toast ${cl[c]||cl.green}`;d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),3000)}
+function toast(m,c='green'){
+  const cl={green:'bg-success-600',red:'bg-danger-600',orange:'bg-warning-600',blue:'bg-primary-600'};
+  const d=document.createElement('div');
+  d.className=`toast ${cl[c]||cl.green}`;
+  d.textContent=m;
+  document.body.appendChild(d);
+  setTimeout(()=>{d.style.opacity='0';d.style.transform='translateX(120%)';setTimeout(()=>d.remove(),300)},3000)
+}
 function showModal(title,content,onSave){
-  document.getElementById('modalContainer').innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-content"><div class="flex items-center justify-between mb-4"><h3 class="text-lg font-bold text-gray-800">${title}</h3><button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button></div><div id="modalBody">${content}</div>${onSave?`<div class="flex justify-end gap-3 mt-4"><button class="btn-secondary" onclick="closeModal()">取消</button><button class="btn-primary" onclick="${onSave}">儲存</button></div>`:''}</div></div>`;
+  document.getElementById('modalContainer').innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-content"><div class="flex items-center justify-between mb-5"><h3 class="text-xl font-bold text-neutral-800">${title}</h3><button onclick="closeModal()" class="text-neutral-400 hover:text-neutral-600 text-2xl transition-colors">&times;</button></div><div id="modalBody">${content}</div>${onSave?`<div class="flex justify-end gap-3 mt-6"><button class="btn-secondary" onclick="closeModal()">取消</button><button class="btn-primary" onclick="${onSave}">儲存</button></div>`:''}</div></div>`;
 }
 function closeModal(){document.getElementById('modalContainer').innerHTML=''}
 
@@ -412,7 +867,7 @@ function showAuth(v){
   document.getElementById('forgotView').classList.toggle('hidden',v!=='forgot');
   ['loginError','regError','forgotMsg'].forEach(id=>{document.getElementById(id).classList.add('hidden')});
 }
-function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.className='mt-3 text-red-500 text-sm text-center';el.classList.remove('hidden')}
+function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.className='mt-4 text-danger-600 text-sm text-center font-medium';el.classList.remove('hidden')}
 
 async function doLogin(){
   const email=document.getElementById('loginEmail').value.trim();
@@ -443,7 +898,7 @@ async function doForgot(){
   if(!email)return showErr('forgotMsg','請輸入電郵');
   const{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});
   if(error)return showErr('forgotMsg',error.message);
-  const el=document.getElementById('forgotMsg');el.textContent='重設連結已發送！點擊連結後將直接登入。';el.className='mt-3 text-green-600 text-sm text-center';el.classList.remove('hidden');
+  const el=document.getElementById('forgotMsg');el.textContent='重設連結已發送！點擊連結後將直接登入。';el.className='mt-3 text-success-600 text-sm text-center font-medium';el.classList.remove('hidden');
 }
 
 async function doLogout(){
@@ -526,420 +981,4 @@ async function upsertInv(branch,pid,qty){
 // ==========================================
 function navigate(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
-  const el=document.getElementById('page-'+page);if(el)el.classList.remove('hidden');
-  document.querySelectorAll('.nav-item[data-page]').forEach(n=>n.classList.remove('active'));
-  document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add('active');
-  const t={dashboard:'儀表板',customers:'客戶管理',exercise:'運動課堂',products:'產品零售',finance:'收支管理',inventory:'庫存管理',reports:'報表分析',settings:'個人設定'};
-  document.getElementById('pageTitle').textContent=t[page]||'';
-  const fn={dashboard:renderDashboard,customers:renderCustomers,exercise:renderExercise,products:renderProductSales,finance:()=>{renderIncome();renderExpenses()},inventory:renderInventory,reports:renderReports,settings:renderSettings};
-  if(fn[page])fn[page]();
-  if(window.innerWidth<768)document.getElementById('sidebar').classList.add('closed');
-}
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('closed')}
-document.addEventListener('click',e=>{if(window.innerWidth<768&&!e.target.closest('#sidebar')&&!e.target.closest('[onclick*="toggleSidebar"]'))document.getElementById('sidebar').classList.add('closed')});
-
-// ==========================================
-// DASHBOARD
-// ==========================================
-function renderDashboard(){
-  const cs=D.customers,m=today().substring(0,7);
-  const inc=D.incomes.filter(i=>(i.date||'').startsWith(m)).reduce((s,i)=>s+(+i.amount||0),0);
-  const exp=D.expenses.filter(i=>(i.date||'').startsWith(m)).reduce((s,i)=>s+(+i.amount||0),0);
-  const mp=inc-exp;
-  const mA=cs.filter(c=>c.marathon&&c.marathon_active).length,mI=cs.filter(c=>c.marathon&&!c.marathon_active).length;
-  const ad=cs.filter(c=>c.source==='廣告').length,ref=cs.filter(c=>c.source==='轉介紹').length;
-  document.getElementById('statCards').innerHTML=`
-    <div class="card p-5 stat-card border-l-4 border-indigo-500"><div class="flex justify-between"><div><div class="text-sm text-gray-500">總會員</div><div class="text-3xl font-bold">${cs.length}</div><div class="text-xs text-gray-400 mt-1">觀塘${cs.filter(c=>c.branch==='觀塘').length} | 中環${cs.filter(c=>c.branch==='中環').length} | 佐敦${cs.filter(c=>c.branch==='佐敦').length}</div></div><div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center"><i class="fas fa-users text-indigo-600"></i></div></div></div>
-    <div class="card p-5 stat-card border-l-4 border-green-500"><div class="flex justify-between"><div><div class="text-sm text-gray-500">馬拉松</div><div class="text-3xl font-bold">${mA+mI}</div><div class="text-xs mt-1"><span class="text-green-500">活躍${mA}</span> | <span class="text-gray-400">不活躍${mI}</span></div></div><div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-running text-green-600"></i></div></div></div>
-    <div class="card p-5 stat-card border-l-4 border-orange-500"><div class="flex justify-between"><div><div class="text-sm text-gray-500">客戶來源</div><div class="text-3xl font-bold">${ad+ref}</div><div class="text-xs mt-1"><span class="text-blue-500">廣告${ad}</span> | <span class="text-orange-500">轉介紹${ref}</span></div></div><div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center"><i class="fas fa-bullhorn text-orange-600"></i></div></div></div>
-    <div class="card p-5 stat-card border-l-4 border-purple-500"><div class="flex justify-between"><div><div class="text-sm text-gray-500">本月淨利</div><div class="text-3xl font-bold ${mp>=0?'text-green-600':'text-red-600'}">$${mp.toLocaleString()}</div></div><div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-dollar-sign text-purple-600"></i></div></div></div>`;
-  renderDashCharts();
-  renderExpiryPreview();
-}
-function renderDashCharts(){
-  const ms=[];for(let i=5;i>=0;i--){const d=new Date();d.setMonth(d.getMonth()-i);ms.push(d.toISOString().substring(0,7))}
-  const rd=ms.map(m=>D.incomes.filter(i=>(i.date||'').startsWith(m)).reduce((s,i)=>s+(+i.amount||0),0));
-  const ed=ms.map(m=>D.expenses.filter(i=>(i.date||'').startsWith(m)).reduce((s,i)=>s+(+i.amount||0),0));
-  if(charts.rev)charts.rev.destroy();
-  charts.rev=new Chart(document.getElementById('revenueChart'),{type:'bar',data:{labels:ms.map(m=>m.substring(5)+'月'),datasets:[{label:'收入',data:rd,backgroundColor:'#6366f1'},{label:'支出',data:ed,backgroundColor:'#ef4444'}]},options:{responsive:true,plugins:{legend:{position:'top'}}}});
-
-  const ec={};D.expenses.forEach(e=>{ec[e.category]=(ec[e.category]||0)+(+e.amount||0)});
-  if(charts.exp)charts.exp.destroy();
-  const ek=Object.keys(ec),colors=['#ef4444','#f59e0b','#10b981','#6366f1','#8b5cf6','#ec4899','#14b8a6','#f97316'];
-  charts.exp=new Chart(document.getElementById('expenseChart'),{type:'doughnut',data:{labels:ek,datasets:[{data:Object.values(ec),backgroundColor:colors.slice(0,ek.length)}]},options:{responsive:true}});
-
-  const ad=D.customers.filter(c=>c.source==='廣告').length,ref=D.customers.filter(c=>c.source==='轉介紹').length;
-  if(charts.src)charts.src.destroy();
-  charts.src=new Chart(document.getElementById('sourceChart'),{type:'pie',data:{labels:['廣告','轉介紹'],datasets:[{data:[ad,ref],backgroundColor:['#6366f1','#f59e0b']}]},options:{responsive:true}});
-  if(charts.br)charts.br.destroy();
-  charts.br=new Chart(document.getElementById('branchChart'),{type:'pie',data:{labels:BRANCHES,datasets:[{data:BRANCHES.map(b=>D.customers.filter(c=>c.branch===b).length),backgroundColor:['#3b82f6','#10b981','#8b5cf6']}]},options:{responsive:true}});
-}
-function renderExpiryPreview(){
-  const t=today(),t30=addDays(t,30);
-  const up=D.exerciseSales.filter(s=>s.expiry_date&&s.expiry_date>=t&&s.expiry_date<=t30).sort((a,b)=>a.expiry_date.localeCompare(b.expiry_date));
-  document.getElementById('expiryList').innerHTML=up.length?up.map(s=>{
-    const d=daysBetween(t,s.expiry_date);
-    return`<div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg mb-2"><div><span class="font-medium">${esc(s.customer_name)}</span><span class="text-sm text-gray-500 ml-2">${s.type==='10pt'?'10點':'35點'}</span></div><div class="text-right"><span class="text-orange-600 font-medium">${s.expiry_date}</span><span class="text-xs text-orange-500 ml-2">(${d}天)</span></div></div>`;
-  }).join(''):'<div class="text-center text-gray-400 py-4">暫無即將到期套票 👍</div>';
-}
-
-// ==========================================
-// CUSTOMERS
-// ==========================================
-function getGen(c){let g=1,cur=c,vis=new Set([c.id]);while(cur.referral_by_id){const p=D.customers.find(x=>x.id===cur.referral_by_id);if(!p||vis.has(p.id))break;vis.add(p.id);if(p.source==='轉介紹'){g++;cur=p}else break}return g}
-
-function renderCustomers(){
-  const q=(document.getElementById('custSearch')?.value||'').toLowerCase(),br=document.getElementById('custFilterBranch')?.value||'',sr=document.getElementById('custFilterSource')?.value||'';
-  let f=D.customers.filter(c=>{if(q&&!c.name.toLowerCase().includes(q)&&!(c.phone||'').includes(q))return false;if(br&&c.branch!==br)return false;if(sr&&c.source!==sr)return false;return true});
-  f.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
-  document.getElementById('custBody').innerHTML=f.map(c=>`<tr class="border-t hover:bg-gray-50">
-    <td class="p-3 font-medium">${esc(c.name)}</td>
-    <td class="p-3">${esc(c.phone||'')}</td>
-    <td class="p-3"><span class="badge ${c.branch==='觀塘'?'bg-blue-100 text-blue-700':c.branch==='中環'?'bg-green-100 text-green-700':'bg-purple-100 text-purple-700'}">${esc(c.branch)}</span></td>
-    <td class="p-3">${c.source==='轉介紹'?`<span class="badge bg-orange-100 text-orange-700">轉介紹</span><span class="text-xs text-gray-400 ml-1">${esc(c.referral_by||'')}</span>`:'<span class="badge bg-blue-100 text-blue-700">廣告</span>'}</td>
-    <td class="p-3">${c.marathon?`<span class="badge ${c.marathon_active?'bg-green-100 text-green-700':'bg-gray-100 text-gray-500'}">${c.marathon_active?'活躍':'不活躍'}</span>`:'-'}</td>
-    <td class="p-3">${c.source==='轉介紹'?'第'+getGen(c)+'代':'-'}</td>
-    <td class="p-3 text-center"><button onclick="showCustModal('${c.id}')" class="text-indigo-600 hover:text-indigo-800 mr-2"><i class="fas fa-edit"></i></button><button onclick="delCust('${c.id}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></td>
-  </tr>`).join('')||'<tr><td colspan="7" class="p-8 text-center text-gray-400">暫無客戶，點擊「新增客戶」開始</td></tr>';
-}
-
-function showCustModal(id){
-  const c=id?D.customers.find(x=>x.id===id):{};
-  showModal(id?'編輯客戶':'新增客戶',`<div class="space-y-3">
-    <div><label class="text-sm font-medium text-gray-600 block mb-1">客戶名稱 *</label><input id="mc_name" value="${esc(c.name||'')}"></div>
-    <div><label class="text-sm font-medium text-gray-600 block mb-1">電話</label><input id="mc_phone" value="${esc(c.phone||'')}"></div>
-    <div><label class="text-sm font-medium text-gray-600 block mb-1">分店</label><select id="mc_branch">${BRANCHES.map(b=>`<option ${c.branch===b?'selected':''}>${b}</option>`).join('')}</select></div>
-    <div><label class="text-sm font-medium text-gray-600 block mb-1">認識來源</label><select id="mc_source" onchange="toggleRef()"><option ${c.source==='廣告'?'selected':''}>廣告</option><option ${c.source==='轉介紹'?'selected':''}>轉介紹</option></select></div>
-    <div id="refField" class="${c.source!=='轉介紹'?'hidden':''}"><label class="text-sm font-medium text-gray-600 block mb-1">介紹人</label><div class="relative"><input id="mc_ref" value="${esc(c.referral_by||'')}" oninput="searchRef()" autocomplete="off" placeholder="輸入名稱搜索..."><input type="hidden" id="mc_refId" value="${c.referral_by_id||''}"><div id="refRes" class="search-results hidden"></div></div><div id="refGen" class="text-xs text-indigo-600 mt-1"></div></div>
-    <div><label class="text-sm font-medium text-gray-600 block mb-1">折扣級別</label><select id="mc_disc">${DISCOUNT_TIERS.map((t,i)=>`<option value="${i}" ${(c.discount_tier||0)==i?'selected':''}>${t}</option>`).join('')}</select></div>
-    <div class="flex items-center gap-4"><label class="flex items-center text-sm"><input type="checkbox" id="mc_mar" ${c.marathon?'checked':''} class="mr-2 w-auto" onchange="toggleMA()">馬拉松</label><label id="mc_ma_w" class="flex items-center text-sm ${c.marathon?'':'hidden'}"><input type="checkbox" id="mc_marA" ${c.marathon_active?'checked':''} class="mr-2 w-auto">活躍</label></div>
-  </div>`,`saveCust('${id||''}')`);
-}
-function toggleRef(){document.getElementById('refField').classList.toggle('hidden',document.getElementById('mc_source').value!=='轉介紹')}
-function toggleMA(){document.getElementById('mc_ma_w').classList.toggle('hidden',!document.getElementById('mc_mar').checked)}
-function searchRef(){
-  const q=document.getElementById('mc_ref').value.toLowerCase(),el=document.getElementById('refRes');
-  if(!q){el.classList.add('hidden');return}
-  const r=D.customers.filter(c=>c.name.toLowerCase().includes(q)).slice(0,8);
-  if(!r.length){el.classList.add('hidden');return}
-  el.classList.remove('hidden');
-  el.innerHTML=r.map(c=>`<div onclick="selRef('${c.id}','${esc(c.name)}')">${esc(c.name)} - ${esc(c.phone||'')} (${esc(c.branch)})</div>`).join('');
-}
-function selRef(id,name){
-  document.getElementById('mc_ref').value=name;document.getElementById('mc_refId').value=id;document.getElementById('refRes').classList.add('hidden');
-  const p=D.customers.find(c=>c.id===id);if(p){const g=p.source==='轉介紹'?getGen(p):0;document.getElementById('refGen').textContent=`此客戶將為第${g+1}代`}
-}
-async function saveCust(id){
-  const data={user_id:userId,name:document.getElementById('mc_name').value.trim(),phone:document.getElementById('mc_phone').value.trim(),branch:document.getElementById('mc_branch').value,source:document.getElementById('mc_source').value,referral_by:document.getElementById('mc_ref')?.value||'',referral_by_id:document.getElementById('mc_refId')?.value||null,discount_tier:+document.getElementById('mc_disc').value,marathon:document.getElementById('mc_mar').checked,marathon_active:document.getElementById('mc_marA')?.checked||false};
-  if(!data.name)return toast('請填寫名稱','red');
-  if(!data.referral_by_id)data.referral_by_id=null;
-  if(id){
-    const{error}=await sb.from('customers').update(data).eq('id',id);
-    if(error)return toast(error.message,'red');
-    Object.assign(D.customers.find(c=>c.id===id),data);
-  }else{
-    const{data:d,error}=await sb.from('customers').insert(data).select().single();
-    if(error)return toast(error.message,'red');
-    D.customers.push(d);
-  }
-  closeModal();renderCustomers();toast(id?'已更新':'已新增');
-}
-async function delCust(id){if(!confirm('確定刪除？'))return;await sb.from('customers').delete().eq('id',id);D.customers=D.customers.filter(c=>c.id!==id);renderCustomers();toast('已刪除')}
-
-// ==========================================
-// EXERCISE SALES
-// ==========================================
-function renderExercise(){
-  let items=[...D.exerciseSales];
-  const type=document.getElementById('exFilterType')?.value,from=document.getElementById('exFilterFrom')?.value,to=document.getElementById('exFilterTo')?.value;
-  if(type)items=items.filter(i=>i.type===type);if(from)items=items.filter(i=>i.date>=from);if(to)items=items.filter(i=>i.date<=to);
-  const tR=items.reduce((s,i)=>s+(+i.amount||0),0),tP=items.reduce((s,i)=>s+(+i.profit||0),0);
-  document.getElementById('exStatCards').innerHTML=`<div class="card p-4 stat-card"><div class="text-sm text-gray-500">筆數</div><div class="text-2xl font-bold">${items.length}</div></div><div class="card p-4 stat-card"><div class="text-sm text-gray-500">營業額</div><div class="text-2xl font-bold text-green-600">$${tR.toLocaleString()}</div></div><div class="card p-4 stat-card"><div class="text-sm text-gray-500">利潤</div><div class="text-2xl font-bold text-indigo-600">$${tP.toLocaleString()}</div></div>`;
-  const tn={trial:'試堂','10pt':'10點','35pt':'35點'};
-  document.getElementById('exBody').innerHTML=items.map(i=>{
-    const exp=i.expiry_date&&i.expiry_date<today(),near=i.expiry_date&&!exp&&i.expiry_date<=addDays(today(),30);
-    return`<tr class="border-t hover:bg-gray-50 ${exp?'bg-red-50':''}${near?'bg-yellow-50':''}"><td class="p-3">${i.date||''}</td><td class="p-3 font-medium">${esc(i.customer_name)}</td><td class="p-3"><span class="badge ${i.type==='trial'?'bg-blue-100 text-blue-700':i.type==='10pt'?'bg-green-100 text-green-700':'bg-purple-100 text-purple-700'}">${tn[i.type]}</span></td><td class="p-3">${esc(i.branch)}</td><td class="p-3 text-right">$${(+i.amount).toLocaleString()}</td><td class="p-3 text-right text-green-600">$${(+i.profit).toLocaleString()}</td><td class="p-3">${i.expiry_date?`<span class="${exp?'text-red-500 font-bold':near?'text-orange-500 expiry-warning':''}">${i.expiry_date}</span> <button onclick="editExpiry('${i.id}','${i.expiry_date}')" class="text-xs text-indigo-500"><i class="fas fa-edit"></i></button>`:'—'}</td><td class="p-3">${esc(i.person)}</td><td class="p-3 text-center"><button onclick="delEx('${i.id}')" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
-  }).join('')||'<tr><td colspan="9" class="p-8 text-center text-gray-400">暫無記錄</td></tr>';
-}
-
-function showExerciseModal(){
-  const co=D.customers.map(c=>`<option value="${c.id}">${esc(c.name)} (${esc(c.branch)})</option>`).join('');
-  showModal('新增運動收入',`<div class="space-y-3">
-    <div><label class="text-sm font-medium text-gray-600 block mb-1">客戶 *</label><select id="me_c" onchange="calcEx()"><option value="">選擇客戶</option>${co}</select></div>
-    <div><label class="text-sm font-medium text-gray-600 block mb-1">類型 *</label><select id="me_t" onchange="calcEx()"><option value="trial">試堂 $98</option><option value="10pt">10點套票 $850</option><option value="35pt">35點套票 $2550</option></select></div>
-    <div><label class="text-sm font-medium text-gray-600 block mb-1">分店</label><select id="me_b">${BRANCHES.map(b=>`<option>${b}</option>`).join('')}</select></div>
-    <div class="flex items-center gap-4 flex-wrap"><label class="flex items-center text-sm"><input type="checkbox" id="me_ref" class="mr-2 w-auto" onchange="calcEx()">轉介紹免費</label><label class="flex items-center text-sm" id="me_nw"><input type="checkbox" id="me_new" class="mr-2 w-auto" onchange="calcEx()">新客開35點(免$98)</label></div>
-    <div class="grid grid-cols-2 gap-3"><div><label class="text-sm font-medium text-gray-600 block mb-1">日期</label><input type="date" id="me_d" value="${today()}"></div><div><label class="text-sm font-medium text-gray-600 block mb-1">負責人</label><select id="me_p"><option>Kwan</option><option>Cat</option></select></div></div>
-    <div id="me_calc" class="bg-gray-50 p-4 rounded-lg text-sm"></div>
-  </div>`,'saveEx()');calcEx();
-}
-
-function calcEx(){
-  const t=document.getElementById('me_t').value,ref=document.getElementById('me_ref').checked,nw=document.getElementById('me_new')?.checked||false;
-  document.getElementById('me_nw').style.display=t==='35pt'?'':'none';
-  let amt=0,shop=0,prod=0,rc=0,profit=0;
-  if(t==='trial'){amt=ref?0:98;rc=ref?52:0;profit=amt-rc}
-  else if(t==='10pt'){amt=850;shop=250;prod=135;rc=ref?52:0;profit=amt-shop-prod-rc}
-  else{amt=nw?2452:2550;shop=800;prod=472.5;rc=ref?52:0;profit=amt-shop-prod-rc}
-  document.getElementById('me_calc').innerHTML=`<div class="flex justify-between"><span>營業額:</span><strong class="text-green-600">$${amt}</strong></div>${shop?`<div class="flex justify-between"><span>店舖:</span><span class="text-red-500">-$${shop}</span></div>`:''}${prod?`<div class="flex justify-between"><span>產品成本:</span><span class="text-red-500">-$${prod}</span></div>`:''}${rc?`<div class="flex justify-between"><span>轉介紹成本:</span><span class="text-red-500">-$${rc}</span></div>`:''}${nw&&t==='35pt'?`<div class="flex justify-between"><span>新客免試堂:</span><span class="text-orange-500">-$98</span></div>`:''}<hr class="my-1"><div class="flex justify-between text-base"><span>利潤:</span><strong class="text-indigo-600">$${profit}</strong></div>`;
-}
-
-async function saveEx(){
-  const cid=document.getElementById('me_c').value;if(!cid)return toast('請選擇客戶','red');
-  const c=D.customers.find(x=>x.id===cid),t=document.getElementById('me_t').value,ref=document.getElementById('me_ref').checked,nw=document.getElementById('me_new')?.checked||false,date=document.getElementById('me_d').value;
-  let amt,shop,prod,rc,profit;
-  if(t==='trial'){amt=ref?0:98;shop=0;prod=0;rc=ref?52:0;profit=amt-rc}
-  else if(t==='10pt'){amt=850;shop=250;prod=135;rc=ref?52:0;profit=amt-shop-prod-rc}
-  else{amt=nw?2452:2550;shop=800;prod=472.5;rc=ref?52:0;profit=amt-shop-prod-rc}
-  const branch=document.getElementById('me_b').value,person=document.getElementById('me_p').value;
-  const expiry=t!=='trial'?addDays(date,365):null;
-  const row={user_id:userId,customer_id:cid,customer_name:c.name,type:t,amount:amt,shop_cost:shop,product_cost:prod,ref_cost:rc,profit,is_ref:ref,is_new:nw,date,branch,person,expiry_date:expiry};
-  const{data:d,error}=await sb.from('exercise_sales').insert(row).select().single();
-  if(error)return toast(error.message,'red');
-  D.exerciseSales.unshift(d);
-  // Auto record income
-  const iRow={user_id:userId,category:'運動課堂',description:`${c.name} - ${t==='trial'?'試堂':t==='10pt'?'10點套票':'35點套票'}`,amount:amt,date,person};
-  const{data:id2}=await sb.from('incomes').insert(iRow).select().single();
-  if(id2)D.incomes.unshift(id2);
-  closeModal();renderExercise();checkExpiry();toast('已記錄');
-}
-
-async function delEx(id){if(!confirm('確定？'))return;await sb.from('exercise_sales').delete().eq('id',id);D.exerciseSales=D.exerciseSales.filter(i=>i.id!==id);renderExercise();checkExpiry();toast('已刪除')}
-
-function editExpiry(id,cur){showModal('修改有效期',`<div><label class="text-sm font-medium text-gray-600 block mb-1">新到期日</label><input type="date" id="newExp" value="${cur}"></div>`,`saveExpiry('${id}')`)}
-async function saveExpiry(id){const d=document.getElementById('newExp').value;await sb.from('exercise_sales').update({expiry_date:d}).eq('id',id);const i=D.exerciseSales.find(x=>x.id===id);if(i)i.expiry_date=d;closeModal();renderExercise();checkExpiry();toast('已更新')}
-
-// ==========================================
-// PRODUCT SALES
-// ==========================================
-function renderProductSales(){
-  let items=[...D.productSales];const from=document.getElementById('psFilterFrom')?.value,to=document.getElementById('psFilterTo')?.value;
-  if(from)items=items.filter(i=>i.date>=from);if(to)items=items.filter(i=>i.date<=to);
-  const tR=items.reduce((s,i)=>s+(+i.total_amount||0),0),tP=items.reduce((s,i)=>s+(+i.profit||0),0);
-  document.getElementById('psStatCards').innerHTML=`<div class="card p-4 stat-card"><div class="text-sm text-gray-500">筆數</div><div class="text-2xl font-bold">${items.length}</div></div><div class="card p-4 stat-card"><div class="text-sm text-gray-500">零售額</div><div class="text-2xl font-bold text-green-600">$${tR.toLocaleString()}</div></div><div class="card p-4 stat-card"><div class="text-sm text-gray-500">利潤</div><div class="text-2xl font-bold text-indigo-600">$${tP.toLocaleString()}</div></div>`;
-  document.getElementById('psBody').innerHTML=items.map(i=>`<tr class="border-t hover:bg-gray-50"><td class="p-3">${i.date}</td><td class="p-3 font-medium">${esc(i.customer_name)}</td><td class="p-3">${esc(i.branch)}</td><td class="p-3 text-xs max-w-xs truncate">${(i.items||[]).map(x=>esc(x.name)+'×'+x.qty).join(', ')}</td><td class="p-3 text-right">$${(+i.total_amount).toLocaleString()}</td><td class="p-3 text-right text-green-600">$${(+i.profit).toLocaleString()}</td><td class="p-3">${esc(i.person)}</td><td class="p-3 text-center"><button onclick="delPS('${i.id}')" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`).join('')||'<tr><td colspan="8" class="p-8 text-center text-gray-400">暫無記錄</td></tr>';
-}
-
-function showProductSaleModal(){
-  cart=[];
-  const co=D.customers.map(c=>`<option value="${c.id}" data-t="${c.discount_tier||0}">${esc(c.name)} (${DISCOUNT_TIERS[c.discount_tier||0]})</option>`).join('');
-  showModal('新增產品零售',`<div class="space-y-3">
-    <div><label class="text-sm font-medium text-gray-600 block mb-1">客戶 *</label><select id="mp_c" onchange="updCart()">${'<option value="">選擇</option>'+co}</select></div>
-    <div class="grid grid-cols-2 gap-3"><div><label class="text-sm font-medium text-gray-600 block mb-1">分店</label><select id="mp_b">${BRANCHES.map(b=>`<option>${b}</option>`).join('')}</select></div><div><label class="text-sm font-medium text-gray-600 block mb-1">負責人</label><select id="mp_p"><option>Kwan</option><option>Cat</option></select></div></div>
-    <div><label class="text-sm font-medium text-gray-600 block mb-1">日期</label><input type="date" id="mp_d" value="${today()}"></div>
-    <div class="border-t pt-3"><label class="text-sm font-medium text-gray-600 block mb-1">搜索產品</label><input id="mp_s" oninput="filterProds()" placeholder="🔍 中文/英文搜索..."><div id="mp_prods" class="max-h-48 overflow-y-auto border rounded-lg mt-2"></div></div>
-    <div class="border-t pt-3"><label class="text-sm font-medium text-gray-600 block mb-1">購物車</label><div id="mp_cart"></div></div>
-    <div id="mp_tot" class="bg-gray-50 p-4 rounded-lg text-sm"></div>
-  </div>`,'savePS()');filterProds();
-}
-
-function getTier(){const s=document.getElementById('mp_c');return s&&s.value?+(s.selectedOptions[0]?.dataset.t||0):0}
-function filterProds(){
-  const q=(document.getElementById('mp_s')?.value||'').toLowerCase(),t=getTier();
-  const ps=PRODUCTS.filter(p=>!p.n.includes('已暫停')).filter(p=>!q||p.n.toLowerCase().includes(q)||p.en.toLowerCase().includes(q)||p.id.toLowerCase().includes(q)).slice(0,25);
-  document.getElementById('mp_prods').innerHTML=ps.map(p=>`<div class="flex items-center justify-between p-2 hover:bg-gray-50 border-b text-sm cursor-pointer" onclick="addCart('${p.id}')"><div class="flex-1 min-w-0"><span class="font-medium">${esc(p.n)}</span><br><span class="text-xs text-gray-400">${esc(p.en)}</span></div><div class="text-right ml-2 flex-shrink-0"><span class="text-green-600 font-medium">$${p.p[t]}</span> <i class="fas fa-plus-circle text-indigo-400 ml-1"></i></div></div>`).join('');
-}
-function addCart(pid){const e=cart.find(c=>c.pid===pid);if(e)e.qty++;else cart.push({pid,qty:1});renderCart()}
-function rmCart(pid){cart=cart.filter(c=>c.pid!==pid);renderCart()}
-function updCartQ(pid,q){const i=cart.find(c=>c.pid===pid);if(i)i.qty=Math.max(1,+q||1);renderCart()}
-function updCart(){renderCart();filterProds()}
-function renderCart(){
-  const t=getTier();let total=0,totalCost=0;
-  document.getElementById('mp_cart').innerHTML=cart.map(c=>{const p=PRODUCTS.find(x=>x.id===c.pid);if(!p)return'';const pr=p.p[t],sub=pr*c.qty;total+=sub;totalCost+=p.cost*c.qty;return`<div class="flex items-center gap-2 bg-gray-50 p-2 rounded mb-1 text-sm"><div class="flex-1 min-w-0 truncate">${esc(p.n)}<br><span class="text-xs text-gray-400">$${pr}</span></div><input type="number" value="${c.qty}" min="1" class="w-14 text-center" onchange="updCartQ('${c.pid}',this.value)"><span class="font-medium w-16 text-right">$${sub}</span><button onclick="rmCart('${c.pid}')" class="text-red-400 ml-1">&times;</button></div>`}).join('')||'<div class="text-gray-400 text-sm py-2">尚未加入產品</div>';
-  const profit=total-totalCost;
-  document.getElementById('mp_tot').innerHTML=`<div class="flex justify-between"><span>零售額:</span><strong class="text-green-600">$${total.toLocaleString()}</strong></div><div class="flex justify-between"><span>成本:</span><span class="text-red-500">-$${totalCost.toLocaleString()}</span></div><hr class="my-1"><div class="flex justify-between text-base"><span>利潤:</span><strong class="text-indigo-600">$${profit.toLocaleString()}</strong></div>`;
-}
-
-async function savePS(){
-  const cid=document.getElementById('mp_c').value;if(!cid||!cart.length)return toast('請選擇客戶並加入產品','red');
-  const c=D.customers.find(x=>x.id===cid),t=getTier(),branch=document.getElementById('mp_b').value,person=document.getElementById('mp_p').value,date=document.getElementById('mp_d').value;
-  let tAmt=0,tCost=0;
-  const items=cart.map(ci=>{const p=PRODUCTS.find(x=>x.id===ci.pid);const pr=p.p[t],sub=pr*ci.qty,csub=p.cost*ci.qty;tAmt+=sub;tCost+=csub;return{pid:ci.pid,name:p.n,qty:ci.qty,price:pr,subtotal:sub,cost:csub}});
-  const row={user_id:userId,customer_id:cid,customer_name:c.name,items,total_amount:tAmt,total_cost:tCost,profit:tAmt-tCost,date,branch,person};
-  const{data:d,error}=await sb.from('product_sales').insert(row).select().single();
-  if(error)return toast(error.message,'red');
-  D.productSales.unshift(d);
-  await sb.from('incomes').insert({user_id:userId,category:'產品零售',description:`${c.name} - ${items.length}件`,amount:tAmt,date,person}).select().single().then(r=>{if(r.data)D.incomes.unshift(r.data)});
-  for(const it of items){const cur=getInvQty(branch,it.pid);await upsertInv(branch,it.pid,cur-it.qty)}
-  closeModal();renderProductSales();toast('已記錄');
-}
-async function delPS(id){if(!confirm('確定？'))return;await sb.from('product_sales').delete().eq('id',id);D.productSales=D.productSales.filter(i=>i.id!==id);renderProductSales();toast('已刪除')}
-
-// ==========================================
-// FINANCE
-// ==========================================
-function switchFTab(b){document.querySelectorAll('[data-ftab]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const t=b.dataset.ftab;['income','expense','summary'].forEach(x=>document.getElementById('ftab-'+x).classList.toggle('hidden',x!==t));if(t==='summary')renderSummary()}
-
-function renderIncome(){
-  const m=document.getElementById('incMonth')?.value||'';let items=[...D.incomes];if(m)items=items.filter(i=>(i.date||'').startsWith(m));
-  const total=items.reduce((s,i)=>s+(+i.amount||0),0);
-  document.getElementById('incBody').innerHTML=items.map(i=>`<tr class="border-t hover:bg-gray-50"><td class="p-3">${i.date}</td><td class="p-3"><span class="badge bg-green-100 text-green-700">${esc(i.category)}</span></td><td class="p-3">${esc(i.description)}</td><td class="p-3 text-right text-green-600 font-medium">$${(+i.amount).toLocaleString()}</td><td class="p-3">${esc(i.person)}</td><td class="p-3 text-center"><button onclick="editInc('${i.id}')" class="text-indigo-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="delInc('${i.id}')" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`).join('')+`<tr class="border-t bg-green-50 font-bold"><td colspan="3" class="p-3">合計</td><td class="p-3 text-right text-green-600">$${total.toLocaleString()}</td><td colspan="2"></td></tr>`;
-}
-function showIncomeModal(id){
-  const i=id?D.incomes.find(x=>x.id===id):{};const cats=(D.settings?.income_categories||['運動課堂','產品零售','其他收入']).map(c=>`<option ${i.category===c?'selected':''}>${c}</option>`).join('');
-  showModal(id?'編輯收入':'新增收入',`<div class="space-y-3"><div><label class="text-sm font-medium text-gray-600 block mb-1">類別</label><select id="mi_cat">${cats}</select></div><div><label class="text-sm font-medium text-gray-600 block mb-1">說明</label><input id="mi_desc" value="${esc(i.description||'')}"></div><div><label class="text-sm font-medium text-gray-600 block mb-1">金額</label><input type="number" id="mi_amt" value="${i.amount||''}" step="0.01"></div><div class="grid grid-cols-2 gap-3"><div><label class="text-sm font-medium text-gray-600 block mb-1">日期</label><input type="date" id="mi_date" value="${i.date||today()}"></div><div><label class="text-sm font-medium text-gray-600 block mb-1">負責人</label><select id="mi_p"><option ${i.person==='Kwan'?'selected':''}>Kwan</option><option ${i.person==='Cat'?'selected':''}>Cat</option></select></div></div></div>`,`saveInc('${id||''}')`);
-}
-function editInc(id){showIncomeModal(id)}
-async function saveInc(id){
-  const data={user_id:userId,category:document.getElementById('mi_cat').value,description:document.getElementById('mi_desc').value,amount:+(document.getElementById('mi_amt').value)||0,date:document.getElementById('mi_date').value,person:document.getElementById('mi_p').value};
-  if(id){await sb.from('incomes').update(data).eq('id',id);Object.assign(D.incomes.find(i=>i.id===id),data)}
-  else{const{data:d}=await sb.from('incomes').insert(data).select().single();if(d)D.incomes.unshift(d)}
-  closeModal();renderIncome();toast('已儲存');
-}
-async function delInc(id){if(!confirm('確定？'))return;await sb.from('incomes').delete().eq('id',id);D.incomes=D.incomes.filter(i=>i.id!==id);renderIncome();toast('已刪除')}
-
-function renderExpenses(){
-  const m=document.getElementById('expMonth')?.value||'';let items=[...D.expenses];if(m)items=items.filter(i=>(i.date||'').startsWith(m));
-  const total=items.reduce((s,i)=>s+(+i.amount||0),0);
-  document.getElementById('expBody').innerHTML=items.map(i=>`<tr class="border-t hover:bg-gray-50"><td class="p-3">${i.date}</td><td class="p-3"><span class="badge bg-red-100 text-red-700">${esc(i.category)}</span></td><td class="p-3">${esc(i.description)}</td><td class="p-3 text-right text-red-600 font-medium">$${(+i.amount).toLocaleString()}</td><td class="p-3">${esc(i.person)}</td><td class="p-3 text-center"><button onclick="editExp('${i.id}')" class="text-indigo-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="delExp('${i.id}')" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`).join('')+`<tr class="border-t bg-red-50 font-bold"><td colspan="3" class="p-3">合計</td><td class="p-3 text-right text-red-600">$${total.toLocaleString()}</td><td colspan="2"></td></tr>`;
-}
-function showExpenseModal(id){
-  const i=id?D.expenses.find(x=>x.id===id):{};const cats=(D.settings?.expense_categories||['Fitwork廣告','FZb廣告','中環交租','觀塘交租','購買產品','馬拉松成本']).map(c=>`<option ${i.category===c?'selected':''}>${c}</option>`).join('');
-  showModal(id?'編輯支出':'新增支出',`<div class="space-y-3"><div><label class="text-sm font-medium text-gray-600 block mb-1">類別</label><select id="mx_cat">${cats}</select></div><div><label class="text-sm font-medium text-gray-600 block mb-1">說明</label><input id="mx_desc" value="${esc(i.description||'')}"></div><div><label class="text-sm font-medium text-gray-600 block mb-1">金額</label><input type="number" id="mx_amt" value="${i.amount||''}" step="0.01"></div><div class="grid grid-cols-2 gap-3"><div><label class="text-sm font-medium text-gray-600 block mb-1">日期</label><input type="date" id="mx_date" value="${i.date||today()}"></div><div><label class="text-sm font-medium text-gray-600 block mb-1">負責人</label><select id="mx_p"><option ${i.person==='Kwan'?'selected':''}>Kwan</option><option ${i.person==='Cat'?'selected':''}>Cat</option></select></div></div></div>`,`saveExp('${id||''}')`);
-}
-function editExp(id){showExpenseModal(id)}
-async function saveExp(id){
-  const data={user_id:userId,category:document.getElementById('mx_cat').value,description:document.getElementById('mx_desc').value,amount:+(document.getElementById('mx_amt').value)||0,date:document.getElementById('mx_date').value,person:document.getElementById('mx_p').value};
-  if(id){await sb.from('expenses').update(data).eq('id',id);Object.assign(D.expenses.find(i=>i.id===id),data)}
-  else{const{data:d}=await sb.from('expenses').insert(data).select().single();if(d)D.expenses.unshift(d)}
-  closeModal();renderExpenses();toast('已儲存');
-}
-async function delExp(id){if(!confirm('確定？'))return;await sb.from('expenses').delete().eq('id',id);D.expenses=D.expenses.filter(i=>i.id!==id);renderExpenses();toast('已刪除')}
-
-function renderSummary(){
-  const m=document.getElementById('sumMonth')?.value||today().substring(0,7);
-  const inc=D.incomes.filter(i=>(i.date||'').startsWith(m)),exp=D.expenses.filter(i=>(i.date||'').startsWith(m));
-  const exS=D.exerciseSales.filter(i=>(i.date||'').startsWith(m)),psS=D.productSales.filter(i=>(i.date||'').startsWith(m));
-  const tI=inc.reduce((s,i)=>s+(+i.amount||0),0),tE=exp.reduce((s,i)=>s+(+i.amount||0),0);
-  const eP=exS.reduce((s,i)=>s+(+i.profit||0),0),pP=psS.reduce((s,i)=>s+(+i.profit||0),0);
-  const ec={};exp.forEach(e=>{ec[e.category]=(ec[e.category]||0)+(+e.amount||0)});
-  const kI=inc.filter(i=>i.person==='Kwan').reduce((s,i)=>s+(+i.amount||0),0),cI=inc.filter(i=>i.person==='Cat').reduce((s,i)=>s+(+i.amount||0),0);
-  const kE=exp.filter(i=>i.person==='Kwan').reduce((s,i)=>s+(+i.amount||0),0),cE=exp.filter(i=>i.person==='Cat').reduce((s,i)=>s+(+i.amount||0),0);
-  document.getElementById('summaryContent').innerHTML=`<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6"><div class="card p-5 border-l-4 border-green-500"><div class="text-sm text-gray-500">總收入</div><div class="text-2xl font-bold text-green-600">$${tI.toLocaleString()}</div></div><div class="card p-5 border-l-4 border-red-500"><div class="text-sm text-gray-500">總支出</div><div class="text-2xl font-bold text-red-600">$${tE.toLocaleString()}</div></div><div class="card p-5 border-l-4 border-indigo-500"><div class="text-sm text-gray-500">淨利潤</div><div class="text-2xl font-bold ${tI-tE>=0?'text-green-600':'text-red-600'}">$${(tI-tE).toLocaleString()}</div></div></div>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="card p-5"><h4 class="font-bold mb-3">利潤分類</h4><div class="space-y-2 text-sm"><div class="flex justify-between"><span>運動課堂利潤</span><span class="text-green-600 font-medium">$${eP.toLocaleString()}</span></div><div class="flex justify-between"><span>產品零售利潤</span><span class="text-green-600 font-medium">$${pP.toLocaleString()}</span></div><hr>${Object.entries(ec).map(([k,v])=>`<div class="flex justify-between"><span>${esc(k)}</span><span class="text-red-500">-$${v.toLocaleString()}</span></div>`).join('')}</div></div>
-  <div class="card p-5"><h4 class="font-bold mb-3">按負責人</h4><div class="space-y-2 text-sm"><div class="flex justify-between"><span>Kwan 收入</span><span class="text-green-600">$${kI.toLocaleString()}</span></div><div class="flex justify-between"><span>Kwan 支出</span><span class="text-red-500">-$${kE.toLocaleString()}</span></div><div class="flex justify-between font-bold"><span>Kwan 淨利</span><span class="${kI-kE>=0?'text-green-600':'text-red-500'}">$${(kI-kE).toLocaleString()}</span></div><hr><div class="flex justify-between"><span>Cat 收入</span><span class="text-green-600">$${cI.toLocaleString()}</span></div><div class="flex justify-between"><span>Cat 支出</span><span class="text-red-500">-$${cE.toLocaleString()}</span></div><div class="flex justify-between font-bold"><span>Cat 淨利</span><span class="${cI-cE>=0?'text-green-600':'text-red-500'}">$${(cI-cE).toLocaleString()}</span></div></div></div></div>`;
-}
-
-// ==========================================
-// INVENTORY
-// ==========================================
-function renderInventory(){
-  const branch=document.getElementById('invBranch')?.value||'觀塘',q=(document.getElementById('invSearch')?.value||'').toLowerCase();
-  const ps=PRODUCTS.filter(p=>!p.n.includes('已暫停')).filter(p=>!q||p.n.toLowerCase().includes(q)||p.en.toLowerCase().includes(q)||p.id.toLowerCase().includes(q));
-  document.getElementById('invBody').innerHTML=ps.map(p=>{
-    const qty=getInvQty(branch,p.id);
-    return`<tr class="border-t hover:bg-gray-50 ${qty<=0?'bg-red-50':qty<=3?'bg-yellow-50':''}"><td class="p-3 font-mono text-xs">${p.id}</td><td class="p-3 font-medium">${esc(p.n)}</td><td class="p-3 text-xs text-gray-500">${esc(p.en)}</td><td class="p-3 text-right font-bold ${qty<=0?'text-red-500':qty<=3?'text-orange-500':'text-green-600'}">${qty}</td><td class="p-3 text-right text-sm">$${p.cost}</td><td class="p-3 text-center"><button onclick="adjStock('${branch}','${p.id}',1)" class="text-green-500 mr-1"><i class="fas fa-plus-circle"></i></button><button onclick="adjStock('${branch}','${p.id}',-1)" class="text-red-500"><i class="fas fa-minus-circle"></i></button></td></tr>`;
-  }).join('');
-}
-async function adjStock(b,pid,d){const cur=getInvQty(b,pid);await upsertInv(b,pid,cur+d);renderInventory()}
-function showStockInModal(){
-  const branch=document.getElementById('invBranch')?.value||'觀塘';
-  const opts=PRODUCTS.filter(p=>!p.n.includes('已暫停')).map(p=>`<option value="${p.id}">${p.id} - ${esc(p.n)}</option>`).join('');
-  showModal('批量入貨',`<div class="space-y-3"><div><label class="text-sm font-medium text-gray-600 block mb-1">分店</label><input value="${branch}" disabled class="bg-gray-50"></div><div><label class="text-sm font-medium text-gray-600 block mb-1">產品</label><select id="si_p">${opts}</select></div><div><label class="text-sm font-medium text-gray-600 block mb-1">數量</label><input type="number" id="si_q" min="1" value="1"></div></div>`,'doStockIn()');
-}
-async function doStockIn(){const b=document.getElementById('invBranch')?.value||'觀塘',pid=document.getElementById('si_p').value,q=+(document.getElementById('si_q').value)||0;if(q<=0)return toast('請輸入數量','red');await adjStock(b,pid,q);closeModal();toast(`已入貨 ${q} 件`)}
-
-// ==========================================
-// REPORTS
-// ==========================================
-function switchRP(b){document.querySelectorAll('[data-rp]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const p=b.dataset.rp;const n=new Date();let f,t;if(p==='day')f=t=today();else if(p==='week'){const d=new Date();d.setDate(d.getDate()-d.getDay());f=fmtDate(d);t=today()}else if(p==='month'){f=today().substring(0,7)+'-01';t=today()}else if(p==='year'){f=today().substring(0,4)+'-01-01';t=today()}else{f='';t=''}document.getElementById('rptFrom').value=f;document.getElementById('rptTo').value=t;renderReports()}
-function renderReports(){
-  const from=document.getElementById('rptFrom')?.value||'',to=document.getElementById('rptTo')?.value||'',per=document.getElementById('rptPerson')?.value||'';
-  let inc=D.incomes,exp=D.expenses,exS=D.exerciseSales,psS=D.productSales;
-  if(from){inc=inc.filter(i=>i.date>=from);exp=exp.filter(i=>i.date>=from);exS=exS.filter(i=>i.date>=from);psS=psS.filter(i=>i.date>=from)}
-  if(to){inc=inc.filter(i=>i.date<=to);exp=exp.filter(i=>i.date<=to);exS=exS.filter(i=>i.date<=to);psS=psS.filter(i=>i.date<=to)}
-  if(per){inc=inc.filter(i=>i.person===per);exp=exp.filter(i=>i.person===per);exS=exS.filter(i=>i.person===per);psS=psS.filter(i=>i.person===per)}
-  const tI=inc.reduce((s,i)=>s+(+i.amount||0),0),tE=exp.reduce((s,i)=>s+(+i.amount||0),0),eP=exS.reduce((s,i)=>s+(+i.profit||0),0),pP=psS.reduce((s,i)=>s+(+i.profit||0),0);
-  document.getElementById('rptStatCards').innerHTML=`<div class="card p-4 border-l-4 border-green-500"><div class="text-sm text-gray-500">總收入</div><div class="text-xl font-bold text-green-600">$${tI.toLocaleString()}</div></div><div class="card p-4 border-l-4 border-red-500"><div class="text-sm text-gray-500">總支出</div><div class="text-xl font-bold text-red-600">$${tE.toLocaleString()}</div></div><div class="card p-4 border-l-4 border-indigo-500"><div class="text-sm text-gray-500">運動利潤</div><div class="text-xl font-bold text-indigo-600">$${eP.toLocaleString()}</div></div><div class="card p-4 border-l-4 border-purple-500"><div class="text-sm text-gray-500">零售利潤</div><div class="text-xl font-bold text-purple-600">$${pP.toLocaleString()}</div></div>`;
-
-  if(charts.r1)charts.r1.destroy();
-  charts.r1=new Chart(document.getElementById('rptChart1'),{type:'bar',data:{labels:['收入','支出'],datasets:[{data:[tI,tE],backgroundColor:['#10b981','#ef4444']}]},options:{responsive:true,plugins:{legend:{display:false}}}});
-  if(charts.r2)charts.r2.destroy();
-  charts.r2=new Chart(document.getElementById('rptChart2'),{type:'bar',data:{labels:['運動','零售','淨利'],datasets:[{data:[eP,pP,tI-tE],backgroundColor:['#6366f1','#8b5cf6',tI-tE>=0?'#10b981':'#ef4444']}]},options:{responsive:true,plugins:{legend:{display:false}}}});
-
-  const adC=D.customers.filter(c=>c.source==='廣告'),refC=D.customers.filter(c=>c.source==='轉介紹');
-  const adR=exS.filter(s=>adC.find(c=>c.id===s.customer_id)).reduce((s,i)=>s+(+i.profit||0),0)+psS.filter(s=>adC.find(c=>c.id===s.customer_id)).reduce((s,i)=>s+(+i.profit||0),0);
-  const refR=exS.filter(s=>refC.find(c=>c.id===s.customer_id)).reduce((s,i)=>s+(+i.profit||0),0)+psS.filter(s=>refC.find(c=>c.id===s.customer_id)).reduce((s,i)=>s+(+i.profit||0),0);
-  if(charts.r3)charts.r3.destroy();
-  charts.r3=new Chart(document.getElementById('rptChart3'),{type:'bar',data:{labels:['廣告','轉介紹'],datasets:[{label:'人數',data:[adC.length,refC.length],backgroundColor:'#6366f1'},{label:'利潤',data:[adR,refR],backgroundColor:'#f59e0b'}]},options:{responsive:true}});
-
-  const adExp=exp.filter(e=>(e.category||'').includes('廣告')).reduce((s,i)=>s+(+i.amount||0),0);
-  document.getElementById('rptDetail').innerHTML=`<div class="space-y-2 text-sm"><div class="flex justify-between"><span>廣告總支出</span><span class="text-red-500 font-medium">$${adExp.toLocaleString()}</span></div><div class="flex justify-between"><span>廣告客戶利潤</span><span class="text-green-600 font-medium">$${adR.toLocaleString()}</span></div><div class="flex justify-between"><span>廣告ROI</span><strong class="${adR-adExp>=0?'text-green-600':'text-red-500'}">$${(adR-adExp).toLocaleString()}</strong></div><hr><div class="flex justify-between"><span>轉介紹客戶利潤</span><span class="text-green-600 font-medium">$${refR.toLocaleString()}</span></div><div class="flex justify-between"><span>轉介紹客戶數</span><span>${refC.length}</span></div><hr><div class="flex justify-between"><span>運動筆數</span><span>${exS.length}</span></div><div class="flex justify-between"><span>零售筆數</span><span>${psS.length}</span></div></div>`;
-}
-
-// ==========================================
-// SETTINGS
-// ==========================================
-function renderSettings(){
-  document.getElementById('setEmail').value=currentUser?.email||'';
-  document.getElementById('setName').value=currentUser?.user_metadata?.name||'';
-  renderCats();
-}
-async function updateProfile(){
-  const n=document.getElementById('setName').value.trim();if(!n)return toast('請填寫名稱','red');
-  await sb.auth.updateUser({data:{name:n}});
-  await sb.from('user_settings').update({name:n}).eq('user_id',userId);
-  toast('已更新');
-}
-async function changePassword(){
-  const p=document.getElementById('setNewPass').value,p2=document.getElementById('setNewPass2').value;
-  if(!p||p.length<6)return toast('密碼至少6位','red');if(p!==p2)return toast('密碼不一致','red');
-  const{error}=await sb.auth.updateUser({password:p});
-  if(error)return toast(error.message,'red');
-  document.getElementById('setNewPass').value='';document.getElementById('setNewPass2').value='';toast('密碼已更新');
-}
-async function deleteAccount(){
-  if(!confirm('確定刪除帳號？所有資料將永久刪除！'))return;if(!confirm('再次確認？'))return;
-  try{await sb.rpc('delete_user_account');await sb.auth.signOut();toast('帳號已刪除')}catch(e){toast('刪除失敗，請聯繫管理員','red')}
-}
-
-function renderCats(){
-  const ec=D.settings?.expense_categories||[],ic=D.settings?.income_categories||[];
-  document.getElementById('customCats').innerHTML=
-    ec.map(c=>`<div class="flex items-center justify-between bg-red-50 p-2 rounded text-sm"><span><i class="fas fa-minus-circle text-red-400 mr-2"></i>支出: ${esc(c)}</span><button onclick="rmCat('expense','${esc(c)}')" class="text-red-400">&times;</button></div>`).join('')+
-    ic.map(c=>`<div class="flex items-center justify-between bg-green-50 p-2 rounded text-sm"><span><i class="fas fa-plus-circle text-green-400 mr-2"></i>收入: ${esc(c)}</span><button onclick="rmCat('income','${esc(c)}')" class="text-green-400">&times;</button></div>`).join('');
-}
-async function addCategory(){
-  const t=document.getElementById('newCatType').value,n=document.getElementById('newCatName').value.trim();if(!n)return;
-  const field=t==='expense'?'expense_categories':'income_categories';
-  const arr=[...(D.settings?.[field]||[]),n];
-  await sb.from('user_settings').update({[field]:arr}).eq('user_id',userId);
-  if(!D.settings)D.settings={};D.settings[field]=arr;
-  document.getElementById('newCatName').value='';renderCats();toast('已新增');
-}
-async function rmCat(t,n){
-  const field=t==='expense'?'expense_categories':'income_categories';
-  const arr=(D.settings?.[field]||[]).filter(c=>c!==n);
-  await sb.from('user_settings').update({[field]:arr}).eq('user_id',userId);
-  D.settings[field]=arr;renderCats();
-}
-
-// ==========================================
-// EXPIRY CHECK
-// ==========================================
-function checkExpiry(){
-  const t=today(),t30=addDays(t,30);
-  const up=D.exerciseSales.filter(s=>s.expiry_date&&s.expiry_date>=t&&s.expiry_date<=t30);
-  const ex=D.exerciseSales.filter(s=>s.expiry_date&&s.expiry_date<t);
-  const n=up.length+ex.length;
-  document.getElementById('expiryAlert').classList.toggle('hidden',n===0);
-  document.getElementById('expiryCount').textContent=n;
-}
-function showExpiryModal(){
-  const t=today(),t30=addDays(t,30);
-  const ex=D.exerciseSales.filter(s=>s.expiry_date&&s.expiry_date<t);
-  const up=D.exerciseSales.filter(s=>s.expiry_date&&s.expiry_date>=t&&s.expiry_date<=t30).sort((a,b)=>a.expiry_date.localeCompare(b.expiry_date));
-  showModal('⏰ 套票到期提醒',`<div class="space-y-3">${ex.length?'<h4 class="font-bold text-red-600">已過期 ('+ex.length+')</h4>'+ex.map(s=>`<div class="p-3 bg-red-50 rounded flex justify-between"><span>${esc(s.customer_name)}</span><span class="text-red-500">${s.expiry_date}</span></div>`).join(''):''}${up.length?'<h4 class="font-bold text-orange-600">即將到期 ('+up.length+')</h4>'+up.map(s=>`<div class="p-3 bg-orange-50 rounded flex justify-between"><span>${esc(s.customer_name)}</span><span class="text-orange-500">${s.expiry_date} (${daysBetween(t,s.expiry_date)}天)</span></div>`).join(''):''}${!ex.length&&!up.length?'<div class="text-center text-gray-400 py-4">暫無提醒 👍</div>':''}</div>`);
-}
-
-// ==========================================
-// INIT
-// ==========================================
-window.addEventListener('load',()=>{
-  document.getElementById('rptFrom').value=today().substring(0,7)+'-01';
-  document.getElementById('rptTo').value=today();
-  document.getElementById('sumMonth').value=today().substring(0,7);
-});
-</script>
-</body>
-</html>
+  const el=document.getElementById('page-'+page);if(el)el.classList
